@@ -1,5 +1,5 @@
 package edu.sjsu.cmpe275.nfttradingmarket.entity;
 
-public enum SellType {
+public enum ListingType {
     PRICED, AUCTION
 }

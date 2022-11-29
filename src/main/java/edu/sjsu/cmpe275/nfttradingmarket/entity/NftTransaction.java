@@ -24,7 +24,7 @@ public class NftTransaction {
     @OneToOne
     private User buyer;
     private CurrencyType currencyType;
-    private SellType sellType;
+    private ListingType listingType;
     @ManyToOne
     private Nft nft;
     private Date createdOn;

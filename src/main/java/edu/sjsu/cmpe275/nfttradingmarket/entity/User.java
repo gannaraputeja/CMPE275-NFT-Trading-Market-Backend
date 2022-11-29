@@ -37,11 +37,7 @@ public class User {
     @OneToMany(mappedBy = "creator")
     @ToString.Exclude
     private List<Nft> createdNfts;
-    @OneToMany(mappedBy = "owner")
-    @ToString.Exclude
-    private List<Nft> ownedNfts;
     @OneToOne(mappedBy = "user")
     @ToString.Exclude
     private Wallet wallet;
-
 }

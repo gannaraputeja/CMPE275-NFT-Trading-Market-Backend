@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.UUID;
 
 @Data @NoArgsConstructor
@@ -21,5 +22,6 @@ public class Wallet {
     private User user;
     private Double amount;
     private CurrencyType type;
-
+    @OneToMany(mappedBy = "wallet")
+    private List<Nft> ownedNfts;
 }

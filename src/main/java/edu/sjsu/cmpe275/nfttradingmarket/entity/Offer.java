@@ -25,6 +25,7 @@ public class Offer {
     @ManyToOne
     private Listing listing;
     private Double amount;
+    private Date createdOn;
     private Date expirationTime;
     private OfferStatus status;
 

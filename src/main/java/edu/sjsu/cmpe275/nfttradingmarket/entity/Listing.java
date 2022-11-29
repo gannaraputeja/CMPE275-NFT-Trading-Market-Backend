@@ -23,7 +23,7 @@ public class Listing {
     @ManyToOne
     private User user;
     private CurrencyType currencyType;
-    private SellType sellType;
+    private ListingType sellType;
     @OneToOne
     private Nft nft;
     private ListingStatus status;
