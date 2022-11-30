@@ -9,6 +9,11 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This is Passenger Entity.
+ * @author Raviteja Gannarapu, Sarat Kumar Kaniti, Sai Charan Peda, Ramya Kotha
+ */
+
 @Data @NoArgsConstructor
 @Entity
 public class Wallet {
@@ -20,9 +25,7 @@ public class Wallet {
     private UUID id;
     @OneToOne
     private User user;
-    private Double amount;
-    @Enumerated(EnumType.STRING)
-    private CurrencyType type;
+
     @OneToMany(mappedBy = "wallet")
-    private List<Nft> ownedNfts;
+    private List<Currency> currencyList;
 }

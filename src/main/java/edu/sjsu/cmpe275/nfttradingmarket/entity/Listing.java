@@ -10,6 +10,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This is Passenger Entity.
+ * @author Raviteja Gannarapu, Sarat Kumar Kaniti, Sai Charan Peda, Ramya Kotha
+ */
+
 @Data @NoArgsConstructor
 @Entity
 public class Listing {
@@ -33,5 +38,4 @@ public class Listing {
     private Date listingTime;
     @OneToMany(mappedBy = "listing")
     private List<Offer> offer;
-
 }

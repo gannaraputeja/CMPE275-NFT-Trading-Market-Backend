@@ -11,6 +11,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This is Passenger Entity.
+ * @author Raviteja Gannarapu, Sarat Kumar Kaniti, Sai Charan Peda, Ramya Kotha
+ */
+
 @Data @NoArgsConstructor
 @Entity
 public class Nft {
@@ -38,7 +43,7 @@ public class Nft {
     private User owner;
     @ManyToOne()
     @ToString.Exclude
-    private Wallet wallet;
+    private User user;
     private ListingType listingType;
     @OneToMany(mappedBy = "nft")
     @ToString.Exclude

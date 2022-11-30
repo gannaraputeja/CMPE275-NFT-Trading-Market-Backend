@@ -5,5 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface CurrencyTransactionRepository extends JpaRepository<UUID, CurrencyTransaction> {
+/**
+ * This is Passenger Entity.
+ * @author Raviteja Gannarapu, Sarat Kumar Kaniti, Sai Charan Peda, Ramya Kotha
+ */
+
+public interface CurrencyTransactionRepository extends JpaRepository<CurrencyTransaction, UUID> {
 }

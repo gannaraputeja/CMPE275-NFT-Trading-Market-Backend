@@ -19,7 +19,7 @@ import java.util.UUID;
 
 /**
  * This is Passenger Entity.
- * @author Raviteja Gannarapu, Sarat Kumar Kaniti, Ramya Kotha, Sai Charan Peda
+ * @author Raviteja Gannarapu, Sarat Kumar Kaniti, Sai Charan Peda, Ramya Kotha
  */
 
 @Data @NoArgsConstructor
@@ -45,10 +45,15 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "creator")
     @ToString.Exclude
     private List<Nft> createdNfts;
+    @OneToMany
+    @ToString.Exclude
+    private List<Nft> ownedNfts;
     @OneToOne(mappedBy = "user")
     @ToString.Exclude
     private Wallet wallet;
-
+    @OneToMany
+    @ToString.Exclude
+    private List<CurrencyTransaction> currencyTransactionList;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());

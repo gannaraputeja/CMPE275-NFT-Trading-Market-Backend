@@ -7,8 +7,13 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * This is Passenger Entity.
+ * @author Raviteja Gannarapu, Sarat Kumar Kaniti, Sai Charan Peda, Ramya Kotha
+ */
+
 @Repository
-public interface UserRespository extends JpaRepository<UUID, User> {
+public interface UserRespository extends JpaRepository<User, UUID> {
 
     Optional<User> findByUsername(String username);
 
