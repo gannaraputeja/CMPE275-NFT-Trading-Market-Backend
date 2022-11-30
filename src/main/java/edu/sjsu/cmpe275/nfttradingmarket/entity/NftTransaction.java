@@ -23,7 +23,9 @@ public class NftTransaction {
     private User seller;
     @OneToOne
     private User buyer;
+    @Enumerated(EnumType.STRING)
     private CurrencyType currencyType;
+    @Enumerated(EnumType.STRING)
     private ListingType listingType;
     @ManyToOne
     private Nft nft;

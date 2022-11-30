@@ -27,6 +27,7 @@ public class Offer {
     private Double amount;
     private Date createdOn;
     private Date expirationTime;
+    @Enumerated(EnumType.STRING)
     private OfferStatus status;
 
 }

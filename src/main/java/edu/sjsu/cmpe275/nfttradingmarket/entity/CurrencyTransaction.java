@@ -21,7 +21,9 @@ public class CurrencyTransaction {
     private Double availableAmount;
     @ManyToOne
     private User user;
+    @Enumerated(EnumType.STRING)
     private CurrencyType currencyType;
+    @Enumerated(EnumType.STRING)
     private CurrencyTransactionType type;
     private Date createdOn;
 

@@ -22,10 +22,13 @@ public class Listing {
     private Double amount;
     @ManyToOne
     private User user;
+    @Enumerated(EnumType.STRING)
     private CurrencyType currencyType;
+    @Enumerated(EnumType.STRING)
     private ListingType sellType;
     @OneToOne
     private Nft nft;
+    @Enumerated(EnumType.STRING)
     private ListingStatus status;
     private Date listingTime;
     @OneToMany(mappedBy = "listing")
