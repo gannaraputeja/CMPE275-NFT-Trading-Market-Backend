@@ -1,19 +1,12 @@
 package edu.sjsu.cmpe275.nfttradingmarket.entity;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,8 +40,14 @@ public class User {
     @OneToMany(mappedBy = "creator")
     @ToString.Exclude
     private List<Nft> createdNfts;
+    @OneToMany(mappedBy = "owner")
+    @ToString.Exclude
+    private List<Nft> ownedNfts;
     @OneToOne(mappedBy = "user")
     @ToString.Exclude
     private Wallet wallet;
+    @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    private List<CurrencyTransaction> currencyTransactionList;
 
 }

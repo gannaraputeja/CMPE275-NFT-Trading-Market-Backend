@@ -25,9 +25,7 @@ public class Wallet {
     private UUID id;
     @OneToOne
     private User user;
-    private Double amount;
-    @Enumerated(EnumType.STRING)
-    private CurrencyType type;
+
     @OneToMany(mappedBy = "wallet")
-    private List<Nft> ownedNfts;
+    private List<Currency> currencyList;
 }

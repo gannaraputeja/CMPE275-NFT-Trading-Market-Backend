@@ -1,5 +1,6 @@
 package edu.sjsu.cmpe275.nfttradingmarket.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
@@ -35,8 +36,8 @@ public class Listing {
     private Nft nft;
     @Enumerated(EnumType.STRING)
     private ListingStatus status;
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="MM-dd-yyyy HH:mm:ss")
     private Date listingTime;
     @OneToMany(mappedBy = "listing")
     private List<Offer> offer;
-
 }
