@@ -1,4 +1,4 @@
-package edu.sjsu.cmpe275.nfttradingmarket.services;
+package edu.sjsu.cmpe275.nfttradingmarket.service;
 
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Listing;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.ListingRepository;

@@ -2,7 +2,7 @@ package edu.sjsu.cmpe275.nfttradingmarket.controller;
 
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NewListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Listing;
-import edu.sjsu.cmpe275.nfttradingmarket.services.ListingService;
+import edu.sjsu.cmpe275.nfttradingmarket.service.ListingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,7 +24,7 @@ public class ListingController {
         this._listingService = _listingService;
     }
 
-    @PostMapping(path = "/NewListingDto", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/createnft", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<NewListingDto> createListing(@RequestBody NewListingDto newListingDto){
         //Convert DTO to entity
         Listing listingRequest = modelMapper.map(newListingDto, Listing.class);

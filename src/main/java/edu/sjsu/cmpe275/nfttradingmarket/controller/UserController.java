@@ -1,6 +1,6 @@
 package edu.sjsu.cmpe275.nfttradingmarket.controller;
 
-import edu.sjsu.cmpe275.nfttradingmarket.services.UserService;
+import edu.sjsu.cmpe275.nfttradingmarket.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
