@@ -1,16 +1,11 @@
 package edu.sjsu.cmpe275.nfttradingmarket.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.CurrencyType;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.ListingStatus;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.ListingType;
-import edu.sjsu.cmpe275.nfttradingmarket.entity.Nft;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.util.Date;
 import java.util.UUID;
 
@@ -21,7 +16,9 @@ public class NewListingDto {
     private Double amount;
     private CurrencyType currencyType;
     private ListingType sellType;
-    private Nft Nft;
+    private UUID nftId;
+    private UUID userId;
     private ListingStatus listingStatus;
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="MM-dd-yyyy HH:mm:ss")
     private Date listedTime;
 }

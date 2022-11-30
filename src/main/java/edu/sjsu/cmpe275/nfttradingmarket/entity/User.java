@@ -1,19 +1,12 @@
 package edu.sjsu.cmpe275.nfttradingmarket.entity;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +17,7 @@ import java.util.UUID;
 
 @Data @NoArgsConstructor
 @Entity
-public class User implements UserDetails {
+public class User {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -45,49 +38,14 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "creator")
     @ToString.Exclude
     private List<Nft> createdNfts;
-    @OneToMany
+    @OneToMany(mappedBy = "owner")
     @ToString.Exclude
     private List<Nft> ownedNfts;
     @OneToOne(mappedBy = "user")
     @ToString.Exclude
     private Wallet wallet;
-    @OneToMany
+    @OneToMany(mappedBy = "user")
     @ToString.Exclude
     private List<CurrencyTransaction> currencyTransactionList;
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
-        return Collections.singletonList(authority);
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return !locked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
 
 }
