@@ -38,5 +38,4 @@ public class Listing {
     private Date listingTime;
     @OneToMany(mappedBy = "listing")
     private List<Offer> offer;
-
 }
