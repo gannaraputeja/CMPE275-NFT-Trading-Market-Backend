@@ -32,7 +32,9 @@ public class User {
     private String nickname;
     @Enumerated(EnumType.STRING)
     private UserRole role;
+    @Column(columnDefinition = "boolean default false")
     private Boolean enabled;
+    @Column(columnDefinition = "boolean default false")
     private Boolean locked;
     private String password;
     @OneToMany(mappedBy = "creator")
