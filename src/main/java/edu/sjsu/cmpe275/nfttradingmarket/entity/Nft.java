@@ -43,7 +43,7 @@ public class Nft {
     private User owner;
     @ManyToOne()
     @ToString.Exclude
-    private Wallet wallet;
+    private User user;
     private ListingType listingType;
     @OneToMany(mappedBy = "nft")
     @ToString.Exclude
