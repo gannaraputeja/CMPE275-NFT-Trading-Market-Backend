@@ -1,6 +1,8 @@
 package edu.sjsu.cmpe275.nfttradingmarket.service;
 
+import edu.sjsu.cmpe275.nfttradingmarket.entity.User;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRespository;
+import edu.sjsu.cmpe275.nfttradingmarket.security.config.MyUserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,7 +22,8 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRespository.findByUsername(username)
+        User user = userRespository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User with username %s not found", username)));
+        return new MyUserPrincipal(user);
     }
 }

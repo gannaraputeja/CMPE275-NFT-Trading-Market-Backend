@@ -24,7 +24,7 @@ import java.util.UUID;
 
 @Data @NoArgsConstructor
 @Entity
-public class User implements UserDetails {
+public class User {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -39,7 +39,9 @@ public class User implements UserDetails {
     private String nickname;
     @Enumerated(EnumType.STRING)
     private UserRole role;
+    @Column(columnDefinition = "boolean default false")
     private Boolean enabled;
+    @Column(columnDefinition = "boolean default false")
     private Boolean locked;
     private String password;
     @OneToMany(mappedBy = "creator")
@@ -48,41 +50,5 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user")
     @ToString.Exclude
     private Wallet wallet;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
-        return Collections.singletonList(authority);
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return !locked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
 
 }

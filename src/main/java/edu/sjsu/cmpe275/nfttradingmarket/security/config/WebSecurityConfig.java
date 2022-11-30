@@ -12,6 +12,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 /**
  * This is Passenger Entity.
@@ -30,8 +33,15 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((auth) -> auth.antMatchers("/api/v*/**").permitAll().anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults());
+
+        http.cors().and().csrf().disable();
+
+        http.authorizeRequests()
+                .antMatchers("/", "/signup", "/resources/**").permitAll()
+                .antMatchers("/api/**").permitAll()//hasRole("USER")
+                .anyRequest().authenticated().and()
+                .formLogin().loginPage("/login").permitAll().and()
+                .logout().logoutUrl("/logout").permitAll();
         return http.build();
     }
 
@@ -48,6 +58,19 @@ public class WebSecurityConfig {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
                 .authenticationProvider(daoAuthenticationProvider())
                 .build();
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 
 
