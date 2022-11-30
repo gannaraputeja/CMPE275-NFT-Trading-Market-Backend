@@ -6,7 +6,6 @@ import edu.sjsu.cmpe275.nfttradingmarket.entity.Listing;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Offer;
 import edu.sjsu.cmpe275.nfttradingmarket.service.ListingService;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +34,7 @@ public class ListingController {
 
         //entity to DTO
         NewListingDto NewListingResponse = modelMapper.map(listing, NewListingDto.class);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.ok().body(NewListingResponse);
     }
 
     @PostMapping(path = "/makeoffer", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -47,6 +46,6 @@ public class ListingController {
 
         //entity to DTO
         MakeOfferDto makeOfferResponse = modelMapper.map(offer, MakeOfferDto.class);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.ok().body(makeOfferResponse);
     }
 }

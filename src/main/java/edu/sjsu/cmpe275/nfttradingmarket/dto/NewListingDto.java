@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.CurrencyType;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.ListingStatus;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.ListingType;
-import edu.sjsu.cmpe275.nfttradingmarket.entity.Nft;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.Date;
