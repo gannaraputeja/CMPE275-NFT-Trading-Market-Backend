@@ -19,7 +19,7 @@ public class SignUpRequest {
 
     @NotBlank
     @Size(min = 3, max = 20)
-    // TODO: Should be Alphanumeric
+    @Pattern(regexp = "^[a-zA-Z0-9]*$")
     private String nickname;
 
     @NotBlank
