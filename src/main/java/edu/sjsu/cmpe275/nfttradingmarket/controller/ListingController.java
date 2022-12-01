@@ -50,9 +50,9 @@ public class ListingController {
         return ResponseEntity.ok().body(makeOfferResponse);
     }
 
-//    @GetMapping(path = "/{id}/", consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
-//    public List<ListingDto> getAllListingsByUser(@PathVariable("id") final String userId){
-//        return listingService.getAllListingsById(userId).stream().map(Listing->modelMapper.map(Listing, ListingDto.class))
-//                .collect(Collectors.toList());
-//    }
+    @GetMapping(path = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ListingDto> getAllListingsByUser(@PathVariable("userId")UUID userId){
+        return listingService.getAllListingsById(userId).stream().map(Listing->modelMapper.map(Listing, ListingDto.class))
+                .collect(Collectors.toList());
+    }
 }
