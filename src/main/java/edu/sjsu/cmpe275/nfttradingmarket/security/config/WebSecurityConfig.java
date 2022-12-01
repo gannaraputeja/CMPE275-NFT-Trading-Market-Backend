@@ -1,17 +1,20 @@
 package edu.sjsu.cmpe275.nfttradingmarket.security.config;
 
+import edu.sjsu.cmpe275.nfttradingmarket.security.AuthEntryPointJWT;
+import edu.sjsu.cmpe275.nfttradingmarket.security.AuthTokenFilter;
 import edu.sjsu.cmpe275.nfttradingmarket.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -31,17 +34,29 @@ public class WebSecurityConfig {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    private AuthEntryPointJWT unauthorizedHandler;
+
+    @Bean
+    public AuthTokenFilter authenticationJWTTokenFilter() {
+        return new AuthTokenFilter();
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.cors().and().csrf().disable();
+        http.cors().and().csrf().disable()
+        .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        .authorizeRequests()
+        .antMatchers("/", "/api/v1/auth/**", "/api/v1/public/**", "/resources/**").permitAll()
+        .antMatchers("/api/**").permitAll()//.hasRole(UserRole.USER) // TODO: set USER Role
+        .anyRequest().authenticated();
 
-        http.authorizeRequests()
-                .antMatchers("/", "/signup", "/resources/**").permitAll()
-                .antMatchers("/api/**").permitAll()//hasRole("USER")
-                .anyRequest().authenticated().and()
-                .formLogin().loginPage("/login").permitAll().and()
-                .logout().logoutUrl("/logout").permitAll();
+        http.authenticationProvider(daoAuthenticationProvider());
+
+        http.addFilterBefore(authenticationJWTTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -54,10 +69,8 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .authenticationProvider(daoAuthenticationProvider())
-                .build();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
 
     @Bean
