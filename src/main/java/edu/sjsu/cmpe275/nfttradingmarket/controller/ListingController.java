@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -29,6 +30,10 @@ public class ListingController {
     @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ListingDto> createListing(@RequestBody ListingDto listingDto){
         //Convert DTO to entity
+        this.modelMapper.typeMap(Listing.class, ListingDto.class)
+                .addMapping(src->src.getNft().getTokenId(), ListingDto::setNftTokenId)
+                .addMapping(src->src.getUser().getId(), ListingDto::setUserId);
+
         Listing listingRequest = modelMapper.map(listingDto, Listing.class);
 
         Listing listing = listingService.createNFT(listingRequest);

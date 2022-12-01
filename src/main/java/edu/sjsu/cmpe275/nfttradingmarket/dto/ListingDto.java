@@ -16,9 +16,9 @@ public class ListingDto {
     private Double amount;
     private CurrencyType currencyType;
     private ListingType sellType;
-    private UUID nftId;
+    private UUID nftTokenId;
     private UUID userId;
     private ListingStatus listingStatus;
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="MM-dd-yyyy HH:mm:ss")
-    private Date listedTime;
+    private Date listingTime;
 }
