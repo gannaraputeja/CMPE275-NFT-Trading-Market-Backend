@@ -1,6 +1,8 @@
-package edu.sjsu.cmpe275.nfttradingmarket.dto;
+package edu.sjsu.cmpe275.nfttradingmarket.dto.request;
 
 import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * This is Passenger Entity.
@@ -8,12 +10,12 @@ import lombok.Data;
  */
 
 @Data
-public class UserRegisterDTO {
+public class LoginRequest {
 
+    @NotBlank
     private String username;
-    private String firstname;
-    private String lastname;
-    private String nickname;
+
+    @NotBlank
     private String password;
 
 }
