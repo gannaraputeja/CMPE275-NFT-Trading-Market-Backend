@@ -1,4 +1,4 @@
-package edu.sjsu.cmpe275.nfttradingmarket.security.config;
+package edu.sjsu.cmpe275.nfttradingmarket.security;
 
 import edu.sjsu.cmpe275.nfttradingmarket.entity.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -7,11 +7,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
+
+/**
+ * This is Passenger Entity.
+ * @author Raviteja Gannarapu, Sarat Kumar Kaniti, Sai Charan Peda, Ramya Kotha
+ */
 
 
 public class MyUserPrincipal implements UserDetails {
 
-    private User user;
+    private final User user;
 
     public MyUserPrincipal(User user) {
         this.user = user;
@@ -21,6 +27,10 @@ public class MyUserPrincipal implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().name());
         return Collections.singletonList(authority);
+    }
+
+    public UUID getId() {
+        return user.getId();
     }
 
     @Override
@@ -52,4 +62,5 @@ public class MyUserPrincipal implements UserDetails {
     public boolean isEnabled() {
         return user.getEnabled();
     }
+
 }
