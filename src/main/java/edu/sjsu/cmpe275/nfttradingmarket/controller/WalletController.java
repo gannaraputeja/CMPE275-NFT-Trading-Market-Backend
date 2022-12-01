@@ -1,7 +1,9 @@
 package edu.sjsu.cmpe275.nfttradingmarket.controller;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.WalletDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Nft;
-import edu.sjsu.cmpe275.nfttradingmarket.service.NftService;
+import edu.sjsu.cmpe275.nfttradingmarket.entity.Wallet;
+import edu.sjsu.cmpe275.nfttradingmarket.service.WalletService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +16,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/wallet")
 public class WalletController {
     private final ModelMapper modelMapper;
-    private final NftService nftService;
+    private final WalletService walletService;
 
-    public WalletController(ModelMapper modelMapper, NftService nftService) {
+    public WalletController(ModelMapper modelMapper, WalletService walletService) {
         this.modelMapper = modelMapper;
-        this.nftService = nftService;
+        this.walletService = walletService;
+    }
+
+    @PostMapping(path = "/createWallet", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<WalletDto> createWallet(@RequestBody WalletDto walletDto)
+    {
+        //convert DTO to entity
+        this.modelMapper.typeMap(Wallet.class, WalletDto.class)
+                .addMapping(src->src.getUser().getId(), WalletDto::setUserId);
+        Wallet walletRequest = modelMapper.map(walletDto, Wallet.class);
+
+        Wallet wallet = walletService.createWallet(walletRequest);
+
+        //entity to DTO
+        WalletDto WalletResponse = modelMapper.map(wallet, WalletDto.class);
+        return ResponseEntity.ok().body(WalletResponse);
     }
 
     @PostMapping(path = "/createNft", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -30,7 +47,7 @@ public class WalletController {
         //Convert DTO to entity
         Nft nftRequest = modelMapper.map(nftDto, Nft.class);
 
-        Nft nft = nftService.createNFT(nftRequest);
+        Nft nft = walletService.createNFT(nftRequest);
 
         //entity to DTO
         NftDto nftResponse = modelMapper.map(nft, NftDto.class);
