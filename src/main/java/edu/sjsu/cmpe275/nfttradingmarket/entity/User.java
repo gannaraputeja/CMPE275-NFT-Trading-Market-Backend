@@ -27,6 +27,7 @@ public class User {
     @Column(unique = true)
     private String username;
     private String firstname;
+
     private String lastname;
     @Column(unique = true)
     private String nickname;
@@ -43,7 +44,7 @@ public class User {
     @OneToMany(mappedBy = "owner")
     @ToString.Exclude
     private List<Nft> ownedNfts;
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     private Wallet wallet;
     @OneToMany(mappedBy = "user")
@@ -55,5 +56,4 @@ public class User {
         this.nickname = nickname;
         this.password = password;
     }
-
 }
