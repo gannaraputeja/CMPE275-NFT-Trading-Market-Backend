@@ -28,7 +28,7 @@ public class EmailService {
     public void send(String username, String firstname, String token) {
         try {
 
-            String link = "http://localhost:8080/api/v1/auth/signup/confirm?token=" + token;
+            String link = "http://localhost:8080/api/v1/auth/validate/email?token=" + token;
             String body = buildEmail(firstname, link);
 
             MimeMessage mimeMessage = mailSender.createMimeMessage();

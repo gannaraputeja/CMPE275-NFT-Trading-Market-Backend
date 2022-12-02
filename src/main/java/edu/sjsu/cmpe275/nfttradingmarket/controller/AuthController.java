@@ -34,12 +34,17 @@ public class AuthController {
         return userService.registerUser(signUpRequestDTO);
     }
 
-    @GetMapping(path = "/signup/confirm")
-    public ResponseEntity<?> confirmRegistration(@NotBlank @RequestParam String token) {
-        return userService.confirmRegistration(token);
+    @GetMapping(path = "/validate/email", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> confirmEmail(@NotBlank @RequestParam String token) {
+        return userService.confirmEmail(token);
     }
 
-    @PostMapping("/login")
+    @PostMapping(path = "/resend/validation/email", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> resendValidationEmail(@NotBlank @RequestParam String username) {
+        return userService.resendValidationEmail(username);
+    }
+
+    @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
         return userService.loginUser(loginRequestDTO, authenticationManager);
     }

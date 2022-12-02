@@ -144,7 +144,7 @@ public class UserService implements UserDetailsService {
         return ResponseEntity.ok(jwtResponse);
     }
 
-    public ResponseEntity<?> confirmRegistration(String token) {
+    public ResponseEntity<?> confirmEmail(String token) {
 
         Optional<ConfirmationToken> confirmationToken = confirmationTokenRepository.findByToken(UUID.fromString(token));
         if(confirmationToken.isEmpty()) {
@@ -159,6 +159,30 @@ public class UserService implements UserDetailsService {
         confirmationTokenRepository.save(confirmationToken.get());
 
         return ResponseEntity.ok(new MessageResponse("User successfully verified!"));
+    }
+
+    public ResponseEntity<?> resendValidationEmail(String username) {
+
+        User user = userRespository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User with username %s not found", username)));
+
+        if(user.getEnabled()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("User already verified."));
+        }
+
+        UUID token = UUID.randomUUID();
+        user.getConfirmationToken().setToken(token);
+        user.getConfirmationToken().setCreatedOn(LocalDateTime.now());
+        user.getConfirmationToken().setExpiresOn(LocalDateTime.now().plusMinutes(15));
+        user.getConfirmationToken().setUser(user);
+        user.getConfirmationToken().setConfirmedOn(null);
+
+        userRespository.save(user);
+
+        emailService.send(user.getUsername(), user.getFirstname(), token.toString());
+
+        return ResponseEntity.ok(new MessageResponse("Verification email sent successfully!"));
+
     }
 
 }
