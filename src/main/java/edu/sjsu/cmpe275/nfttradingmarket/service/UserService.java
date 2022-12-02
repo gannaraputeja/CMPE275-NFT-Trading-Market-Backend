@@ -1,12 +1,13 @@
 package edu.sjsu.cmpe275.nfttradingmarket.service;
 
-import edu.sjsu.cmpe275.nfttradingmarket.dto.request.SignUpRequest;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.request.SignUpRequestDTO;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.response.JWTResponse;
-import edu.sjsu.cmpe275.nfttradingmarket.dto.request.LoginRequest;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.request.LoginRequestDTO;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
+import edu.sjsu.cmpe275.nfttradingmarket.entity.Currency;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.ConfirmationTokenRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRespository;
-import edu.sjsu.cmpe275.nfttradingmarket.repository.WalletRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.security.MyUserPrincipal;
 import edu.sjsu.cmpe275.nfttradingmarket.security.config.JWTConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -37,10 +38,16 @@ public class UserService implements UserDetailsService {
     private UserRespository userRespository;
 
     @Autowired
+    private ConfirmationTokenRepository confirmationTokenRepository;
+
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     JWTConfig jwtConfig;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -49,34 +56,44 @@ public class UserService implements UserDetailsService {
         return new MyUserPrincipal(user);
     }
 
-    public ResponseEntity<?> registerUser(SignUpRequest signUpRequest) {
+    public ResponseEntity<Object> registerUser(SignUpRequestDTO signUpRequestDTO) {
 
-        if (userRespository.existsByUsername(signUpRequest.getUsername())) {
+        if (userRespository.existsByUsername(signUpRequestDTO.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already use!"));
         }
 
-        if (userRespository.existsByNickname(signUpRequest.getNickname())) {
+        if (userRespository.existsByNickname(signUpRequestDTO.getNickname())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Nickname is already in taken!"));
         }
 
         // Create new user's account
-        User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getNickname(),
-                bCryptPasswordEncoder.encode(signUpRequest.getPassword()));
-        user.setFirstname(signUpRequest.getFirstname());
-        user.setLastname(signUpRequest.getLastname());
+        User user = new User(signUpRequestDTO.getUsername(), signUpRequestDTO.getNickname(),
+                bCryptPasswordEncoder.encode(signUpRequestDTO.getPassword()));
+        user.setFirstname(signUpRequestDTO.getFirstname());
+        user.setLastname(signUpRequestDTO.getLastname());
         user.setRole(UserRole.USER);
-        user.setEnabled(true); // TODO: Set to false until email validation
+        user.setEnabled(false); // TODO: Set to false until email validation
         user.setLocked(false);
 
+        // Create Wallet
         Wallet wallet = createWallet(user);
         user.setWallet(wallet);
 
+        // Create ConfirmationToken
+        UUID token = UUID.randomUUID();
+
+        ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15), user);
+        user.setConfirmationToken(confirmationToken);
+
         userRespository.save(user);
+
+        emailService.send(user.getUsername(), user.getFirstname(), token.toString());
+
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
@@ -84,6 +101,7 @@ public class UserService implements UserDetailsService {
         Wallet wallet = new Wallet();
         wallet.setUser(user);
 
+        // Create currencies
         Currency currencyBTC = new Currency(0.0, CurrencyType.BTC, wallet);
         Currency currencyETH = new Currency(0.0, CurrencyType.ETH, wallet);
 
@@ -96,9 +114,21 @@ public class UserService implements UserDetailsService {
         return wallet;
     }
 
-    public ResponseEntity<?> authenticateUser(LoginRequest loginRequest, AuthenticationManager authenticationManager) {
+    public ResponseEntity<?> loginUser(LoginRequestDTO loginRequestDTO, AuthenticationManager authenticationManager) {
+
+        if (!userRespository.existsByUsername(loginRequestDTO.getUsername())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Username does not exist!"));
+        }
+
+        return authenticateUser(loginRequestDTO.getUsername(), loginRequestDTO.getPassword(), authenticationManager);
+    }
+
+    public ResponseEntity<?> authenticateUser(String username, String password, AuthenticationManager authenticationManager) {
+
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(username, password));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -112,6 +142,47 @@ public class UserService implements UserDetailsService {
 
         JWTResponse jwtResponse = new JWTResponse(jwt, userPrincipal.getId(), userPrincipal.getUsername(), roles, userPrincipal.isEnabled());
         return ResponseEntity.ok(jwtResponse);
+    }
+
+    public ResponseEntity<?> confirmEmail(String token) {
+
+        Optional<ConfirmationToken> confirmationToken = confirmationTokenRepository.findByToken(UUID.fromString(token));
+        if(confirmationToken.isEmpty()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Invalid token."));
+        } else if (confirmationToken.get().getConfirmedOn() != null){
+            return ResponseEntity.badRequest().body(new MessageResponse("Token already validated."));
+        }else if(confirmationToken.get().getExpiresOn().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Token expired."));
+        }
+        confirmationToken.get().setConfirmedOn(LocalDateTime.now());
+        confirmationToken.get().getUser().setEnabled(true);
+        confirmationTokenRepository.save(confirmationToken.get());
+
+        return ResponseEntity.ok(new MessageResponse("User successfully verified!"));
+    }
+
+    public ResponseEntity<?> resendValidationEmail(String username) {
+
+        User user = userRespository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User with username %s not found", username)));
+
+        if(user.getEnabled()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("User already verified."));
+        }
+
+        UUID token = UUID.randomUUID();
+        user.getConfirmationToken().setToken(token);
+        user.getConfirmationToken().setCreatedOn(LocalDateTime.now());
+        user.getConfirmationToken().setExpiresOn(LocalDateTime.now().plusMinutes(15));
+        user.getConfirmationToken().setUser(user);
+        user.getConfirmationToken().setConfirmedOn(null);
+
+        userRespository.save(user);
+
+        emailService.send(user.getUsername(), user.getFirstname(), token.toString());
+
+        return ResponseEntity.ok(new MessageResponse("Verification email sent successfully!"));
+
     }
 
 }

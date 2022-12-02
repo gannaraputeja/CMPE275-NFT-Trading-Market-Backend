@@ -2,7 +2,8 @@ package edu.sjsu.cmpe275.nfttradingmarket;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+import javax.annotation.PostConstruct;
+import java.util.TimeZone;
 
 /**
  * This is Passenger Entity.
@@ -14,6 +15,12 @@ public class NftTradingMarketApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(NftTradingMarketApplication.class, args);
+	}
+
+	@PostConstruct
+	public void init(){
+		// Setting Spring Boot SetTimeZone
+		TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
 	}
 
 }

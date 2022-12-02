@@ -24,7 +24,7 @@ public class User {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID id;
-    @Column(unique = true)
+    @Column(unique = true, length = 320)
     private String username;
     private String firstname;
 
@@ -50,6 +50,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
     private List<CurrencyTransaction> currencyTransactionList;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private ConfirmationToken confirmationToken;
 
     public User(String username, String nickname, String password) {
         this.username = username;
