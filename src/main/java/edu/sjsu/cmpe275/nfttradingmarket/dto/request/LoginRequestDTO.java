@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
  */
 
 @Data
-public class LoginRequest {
+public class LoginRequestDTO {
 
     @NotBlank
     @Email
