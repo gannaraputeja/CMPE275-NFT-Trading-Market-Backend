@@ -4,9 +4,9 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.request.SignUpRequest;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.response.JWTResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.LoginRequest;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
-import edu.sjsu.cmpe275.nfttradingmarket.entity.User;
-import edu.sjsu.cmpe275.nfttradingmarket.entity.UserRole;
+import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRespository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.WalletRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.security.MyUserPrincipal;
 import edu.sjsu.cmpe275.nfttradingmarket.security.config.JWTConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,9 +72,28 @@ public class UserService implements UserDetailsService {
         user.setRole(UserRole.USER);
         user.setEnabled(true); // TODO: Set to false until email validation
         user.setLocked(false);
-        userRespository.save(user);
 
+        Wallet wallet = createWallet(user);
+        user.setWallet(wallet);
+
+        userRespository.save(user);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+    private Wallet createWallet(User user){
+        Wallet wallet = new Wallet();
+        wallet.setUser(user);
+
+        Currency currencyBTC = new Currency(0.0, CurrencyType.BTC, wallet);
+        Currency currencyETH = new Currency(0.0, CurrencyType.ETH, wallet);
+
+        List<Currency> currencies = new ArrayList<>();
+        currencies.add(currencyBTC);
+        currencies.add(currencyETH);
+
+        wallet.setCurrencyList(currencies);
+
+        return wallet;
     }
 
     public ResponseEntity<?> authenticateUser(LoginRequest loginRequest, AuthenticationManager authenticationManager) {

@@ -26,6 +26,6 @@ public class Wallet {
     @OneToOne
     private User user;
 
-    @OneToMany(mappedBy = "wallet")
+    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL)
     private List<Currency> currencyList;
 }

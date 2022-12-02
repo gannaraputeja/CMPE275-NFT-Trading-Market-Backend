@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 /**
@@ -19,6 +20,7 @@ import javax.validation.Valid;
  * @author Raviteja Gannarapu, Sarat Kumar Kaniti, Sai Charan Peda, Ramya Kotha
  */
 
+@Transactional
 @RestController
 @RequestMapping(path = "/api/v1/auth")
 public class AuthController {
