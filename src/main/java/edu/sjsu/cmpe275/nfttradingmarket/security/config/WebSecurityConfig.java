@@ -6,6 +6,8 @@ import edu.sjsu.cmpe275.nfttradingmarket.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -18,6 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+
+import java.util.Collections;
 
 /**
  * This is Passenger Entity.
@@ -74,14 +78,15 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+        config.setAllowedOriginPatterns(Collections.singletonList("*"));
+        config.setAllowedHeaders(Collections.singletonList("*"));
+        config.setAllowedMethods(Collections.singletonList("*"));
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
