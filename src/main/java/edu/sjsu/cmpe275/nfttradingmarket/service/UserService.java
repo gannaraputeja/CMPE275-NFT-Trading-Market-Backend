@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRespository;
+    private UserRepository userRepository;
 
     @Autowired
     private ConfirmationTokenRepository confirmationTokenRepository;
@@ -51,20 +51,20 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRespository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User with username %s not found", username)));
         return new MyUserPrincipal(user);
     }
 
     public ResponseEntity<Object> registerUser(SignUpRequestDTO signUpRequestDTO) {
 
-        if (userRespository.existsByUsername(signUpRequestDTO.getUsername())) {
+        if (userRepository.existsByUsername(signUpRequestDTO.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already use!"));
         }
 
-        if (userRespository.existsByNickname(signUpRequestDTO.getNickname())) {
+        if (userRepository.existsByNickname(signUpRequestDTO.getNickname())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Nickname is already in taken!"));
@@ -90,7 +90,7 @@ public class UserService implements UserDetailsService {
                 LocalDateTime.now().plusMinutes(15), user);
         user.setConfirmationToken(confirmationToken);
 
-        userRespository.save(user);
+        userRepository.save(user);
 
         emailService.send(user.getUsername(), user.getFirstname(), token.toString());
 
@@ -116,7 +116,7 @@ public class UserService implements UserDetailsService {
 
     public ResponseEntity<?> loginUser(LoginRequestDTO loginRequestDTO, AuthenticationManager authenticationManager) {
 
-        if (!userRespository.existsByUsername(loginRequestDTO.getUsername())) {
+        if (!userRepository.existsByUsername(loginRequestDTO.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username does not exist!"));
@@ -163,7 +163,7 @@ public class UserService implements UserDetailsService {
 
     public ResponseEntity<?> resendValidationEmail(String username) {
 
-        User user = userRespository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User with username %s not found", username)));
 
         if(user.getEnabled()) {
@@ -177,7 +177,7 @@ public class UserService implements UserDetailsService {
         user.getConfirmationToken().setUser(user);
         user.getConfirmationToken().setConfirmedOn(null);
 
-        userRespository.save(user);
+        userRepository.save(user);
 
         emailService.send(user.getUsername(), user.getFirstname(), token.toString());
 

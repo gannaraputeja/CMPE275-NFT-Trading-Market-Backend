@@ -18,13 +18,13 @@ public class ListingService {
     private final ListingRepository listingRepository;
     private final OfferRepository offerRepository;
 
-    private final UserRepository userRespository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRepository userRespository, ModelMapper modelMapper) {
+    public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRepository userRepository, ModelMapper modelMapper) {
         this.listingRepository = listingRepository;
         this.offerRepository = offerRepository;
-        this.userRespository = userRespository;
+        this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -38,7 +38,7 @@ public class ListingService {
 
     public List<ListingDto> getAllListingsById(UUID userId)
     {
-        Optional<User> user = userRespository.findById(userId);
+        Optional<User> user = userRepository.findById(userId);
         if(user.isPresent())
         {
             List<Listing> result = listingRepository.findAllByUser(user);
