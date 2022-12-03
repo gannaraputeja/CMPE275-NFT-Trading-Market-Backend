@@ -4,7 +4,6 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.CurrencyTransactionDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.CurrencyTransaction;
 import edu.sjsu.cmpe275.nfttradingmarket.service.CurrencyTransactionService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
