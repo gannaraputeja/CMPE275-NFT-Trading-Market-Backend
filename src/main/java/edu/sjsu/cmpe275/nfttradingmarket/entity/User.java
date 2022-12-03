@@ -27,7 +27,6 @@ public class User {
     @Column(unique = true)
     private String username;
     private String firstname;
-
     private String lastname;
     @Column(unique = true)
     private String nickname;
@@ -38,6 +37,9 @@ public class User {
     @Column(columnDefinition = "boolean default false")
     private Boolean locked;
     private String password;
+    @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    private List<Listing> listings;
     @OneToMany(mappedBy = "creator")
     @ToString.Exclude
     private List<Nft> createdNfts;

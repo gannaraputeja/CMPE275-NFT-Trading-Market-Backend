@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/listing")
@@ -56,7 +55,6 @@ public class ListingController {
 
     @GetMapping(path = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ListingDto> getAllListingsByUser(@PathVariable("userId") UUID userId){
-        return listingService.getAllListingsById(userId).stream().map(Listing->modelMapper.map(Listing, ListingDto.class))
-                .collect(Collectors.toList());
+        return listingService.getAllListingsById(userId);
     }
 }

@@ -1,17 +1,21 @@
 package edu.sjsu.cmpe275.nfttradingmarket.service;
 
+import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Listing;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Offer;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.User;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.ListingRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.OfferRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRespository;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ListingService {
@@ -19,11 +23,13 @@ public class ListingService {
     private final OfferRepository offerRepository;
 
     private final UserRespository userRespository;
+    private final ModelMapper modelMapper;
 
-    public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRespository userRespository) {
+    public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRespository userRespository, ModelMapper modelMapper) {
         this.listingRepository = listingRepository;
         this.offerRepository = offerRepository;
         this.userRespository = userRespository;
+        this.modelMapper = modelMapper;
     }
 
     public Listing createNFT(Listing listing){
@@ -34,13 +40,24 @@ public class ListingService {
         return offerRepository.save(offer);
     }
 
-    public List<Listing> getAllListingsById(UUID userId){
+    public List<ListingDto> getAllListingsById(UUID userId)
+    {
         Optional<User> user = userRespository.findById(userId);
+        if(user.isPresent())
+        {
+            List<Listing> result = listingRepository.findAllByUser(user);
+            if(!result.isEmpty())
+            {
+                List<ListingDto> listingDtoList = result
+                        .stream()
+                        .map(Listing -> modelMapper.map(Listing, ListingDto.class))
+                        .collect(Collectors.toList());
 
-        List<Listing> result = listingRepository.findAllByUserId(user.get());
-
-        if(!result.isEmpty())
-            return result;
+                return listingDtoList;
+            }
+            else
+                throw new ResourceNotFoundException();
+        }
         else
             throw new ResourceNotFoundException();
     }
