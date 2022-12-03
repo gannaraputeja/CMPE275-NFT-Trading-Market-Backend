@@ -7,7 +7,7 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Currency;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.ConfirmationTokenRepository;
-import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRespository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.security.MyUserPrincipal;
 import edu.sjsu.cmpe275.nfttradingmarket.security.config.JWTConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
 
     @Autowired
-    private UserRespository userRespository;
+    private UserRepository userRespository;
 
     @Autowired
     private ConfirmationTokenRepository confirmationTokenRepository;
