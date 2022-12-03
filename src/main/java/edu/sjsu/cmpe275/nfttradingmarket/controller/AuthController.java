@@ -1,19 +1,17 @@
 package edu.sjsu.cmpe275.nfttradingmarket.controller;
 
-import edu.sjsu.cmpe275.nfttradingmarket.dto.request.LoginRequest;
-import edu.sjsu.cmpe275.nfttradingmarket.dto.request.SignUpRequest;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.request.LoginRequestDTO;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.request.SignUpRequestDTO;
 import edu.sjsu.cmpe275.nfttradingmarket.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 /**
  * This is Passenger Entity.
@@ -29,18 +27,26 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
-    AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
 
     @PostMapping(path = "/signup", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-        return userService.registerUser(signUpRequest);
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
+        return userService.registerUser(signUpRequestDTO);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    @GetMapping(path = "/validate/email", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> confirmEmail(@NotBlank @RequestParam String token) {
+        return userService.confirmEmail(token);
+    }
 
-        return userService.authenticateUser(loginRequest, authenticationManager);
+    @PostMapping(path = "/resend/validation/email", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> resendValidationEmail(@NotBlank @RequestParam String username) {
+        return userService.resendValidationEmail(username);
+    }
 
+    @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
+        return userService.loginUser(loginRequestDTO, authenticationManager);
     }
 
 }

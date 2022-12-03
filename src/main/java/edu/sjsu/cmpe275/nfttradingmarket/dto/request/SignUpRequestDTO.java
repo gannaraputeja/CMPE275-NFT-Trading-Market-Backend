@@ -10,20 +10,20 @@ import javax.validation.constraints.*;
  */
 
 @Data
-public class SignUpRequest {
+public class SignUpRequestDTO {
 
     @NotBlank
-    @Size(min = 3, max = 20)
+    @Size(min = 3, max = 100)
     @Email
     private String username;
 
     @NotBlank
-    @Size(min = 3, max = 20)
+    @Size(min = 3, max = 40)
     @Pattern(regexp = "^[a-zA-Z0-9]*$")
     private String nickname;
 
     @NotBlank
-    @Size(min = 6, max = 40)
+    @Size(min = 8, max = 40)
     private String password;
 
     @NotBlank
