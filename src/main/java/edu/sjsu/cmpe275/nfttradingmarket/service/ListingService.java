@@ -4,18 +4,18 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.MakeOfferDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
-import edu.sjsu.cmpe275.nfttradingmarket.exception.ListingNotFoundException;
-import edu.sjsu.cmpe275.nfttradingmarket.exception.NoListingsFoundException;
-import edu.sjsu.cmpe275.nfttradingmarket.exception.NoOffersFoundForListingException;
-import edu.sjsu.cmpe275.nfttradingmarket.exception.UserNotFoundException;
+import edu.sjsu.cmpe275.nfttradingmarket.exception.*;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.ListingRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.NftRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.OfferRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,7 +44,7 @@ public class ListingService {
         return offerRepository.save(offer);
     }
 
-    public ResponseEntity<ListingDto> cancelListingOfId(UUID listingId)
+    public ResponseEntity<ListingDto> updateListingCancellationStatus(UUID listingId)
     {
         Listing updateListing = listingRepository.findById(listingId)
                 .orElseThrow(()->new ListingNotFoundException("No listing available with given listingId"));
@@ -56,6 +56,19 @@ public class ListingService {
         ListingDto newListingDtoResponse = modelMapper.map(updateListing, ListingDto.class);
 
         return ResponseEntity.ok().body(newListingDtoResponse);
+    }
+
+    public ResponseEntity<MakeOfferDto> updateOfferCancellationStatus(UUID OfferId){
+        Offer updateOffer = offerRepository.findById(OfferId)
+                .orElseThrow(()-> new OfferNotAvailabeException("No Offer available with given Offer Id"));
+
+        updateOffer.setStatus(OfferStatus.CANCELLED);
+
+        offerRepository.save(updateOffer);
+
+        MakeOfferDto newOfferDtoResponse = modelMapper.map(updateOffer, MakeOfferDto.class);
+
+        return ResponseEntity.ok().body(newOfferDtoResponse);
     }
 
     public List<ListingDto> getAllListingsById(UUID userId)

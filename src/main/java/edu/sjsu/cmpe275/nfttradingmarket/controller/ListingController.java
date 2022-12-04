@@ -69,7 +69,12 @@ public class ListingController {
     @PutMapping(path = "/cancelListing/{listingId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ListingDto> cancelListing(@PathVariable("listingId") UUID listingId)
     {
-        return listingService.cancelListingOfId(listingId);
+        return listingService.updateListingCancellationStatus(listingId);
+    }
+
+    @PutMapping(path="cancelOffer/{OfferId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<MakeOfferDto> cancelOffer(@PathVariable("OfferId") UUID OfferId){
+        return listingService.updateOfferCancellationStatus(OfferId);
     }
 
     @GetMapping(path= "/offers/{listingId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
