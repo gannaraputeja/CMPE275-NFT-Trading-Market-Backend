@@ -2,6 +2,7 @@ package edu.sjsu.cmpe275.nfttradingmarket.controller;
 
 import edu.sjsu.cmpe275.nfttradingmarket.dto.MakeOfferDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Listing;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Offer;
 import edu.sjsu.cmpe275.nfttradingmarket.service.ListingService;
@@ -56,5 +57,10 @@ public class ListingController {
     @GetMapping(path = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ListingDto> getAllListingsByUser(@PathVariable("userId") UUID userId){
         return listingService.getAllListingsById(userId);
+    }
+
+    @GetMapping(path = "/nft/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<NftDto> getAllNftListingsByUser(@PathVariable("userId") UUID userId){
+        return listingService.getAllNftListingsByUser(userId);
     }
 }

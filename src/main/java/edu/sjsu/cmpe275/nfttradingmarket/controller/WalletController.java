@@ -7,10 +7,10 @@ import edu.sjsu.cmpe275.nfttradingmarket.service.WalletService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/wallet")
@@ -52,5 +52,11 @@ public class WalletController {
         //entity to DTO
         NftDto nftResponse = modelMapper.map(nft, NftDto.class);
         return ResponseEntity.ok().body(nftResponse);
+    }
+
+    @GetMapping(path="/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<NftDto> getNftsById(@PathVariable("userId") UUID userId)
+    {
+        return walletService.getNfsById(userId);
     }
 }
