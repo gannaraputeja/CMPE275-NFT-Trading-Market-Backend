@@ -24,7 +24,7 @@ public class CurrencyTransactionController {
         this.currencyTransactionService = currencyTransactionService;
     }
 
-    @PostMapping(path="/create", consumes= MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path= "/createDepositOrWithdrawTransaction", consumes= MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CurrencyTransactionDto> createCurrencyTransaction(@RequestBody CurrencyTransactionDto currencyTransactionDto){
         //convert DTO to entity
         this.modelMapper.typeMap(CurrencyTransaction.class, CurrencyTransactionDto.class).

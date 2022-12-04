@@ -54,9 +54,10 @@ public class WalletController {
         return ResponseEntity.ok().body(nftResponse);
     }
 
-    @GetMapping(path="/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path="/getALlNfts/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<NftDto> getNftsById(@PathVariable("userId") UUID userId)
     {
+
         return walletService.getNfsById(userId);
     }
 }

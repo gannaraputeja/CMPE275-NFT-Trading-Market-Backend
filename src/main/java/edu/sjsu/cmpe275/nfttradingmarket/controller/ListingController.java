@@ -1,13 +1,11 @@
 package edu.sjsu.cmpe275.nfttradingmarket.controller;
 
-import edu.sjsu.cmpe275.nfttradingmarket.dto.CancelListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.MakeOfferDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Listing;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Offer;
 import edu.sjsu.cmpe275.nfttradingmarket.service.ListingService;
-import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
