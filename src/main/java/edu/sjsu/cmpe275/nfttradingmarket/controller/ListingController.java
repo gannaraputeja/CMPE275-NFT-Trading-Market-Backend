@@ -28,7 +28,7 @@ public class ListingController {
         this.listingService = _listingService;
     }
 
-    @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/createListing", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ListingDto> createListing(@RequestBody ListingDto listingDto){
         //Convert DTO to entity
         this.modelMapper.typeMap(Listing.class, ListingDto.class)
