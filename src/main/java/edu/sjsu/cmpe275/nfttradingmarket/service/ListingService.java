@@ -1,12 +1,13 @@
 package edu.sjsu.cmpe275.nfttradingmarket.service;
 
+import edu.sjsu.cmpe275.nfttradingmarket.dto.CancelListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.MakeOfferDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
-import edu.sjsu.cmpe275.nfttradingmarket.entity.Listing;
-import edu.sjsu.cmpe275.nfttradingmarket.entity.Nft;
-import edu.sjsu.cmpe275.nfttradingmarket.entity.Offer;
-import edu.sjsu.cmpe275.nfttradingmarket.entity.User;
+import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
+import edu.sjsu.cmpe275.nfttradingmarket.exception.ListingNotFoundException;
 import edu.sjsu.cmpe275.nfttradingmarket.exception.NoListingsFoundException;
+import edu.sjsu.cmpe275.nfttradingmarket.exception.NoOffersFoundForListingException;
 import edu.sjsu.cmpe275.nfttradingmarket.exception.UserNotFoundException;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.ListingRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.NftRepository;
@@ -41,6 +42,21 @@ public class ListingService {
 
     public Offer makeOffer(Offer offer){
         return offerRepository.save(offer);
+    }
+
+    public void cancelListingOfId(CancelListingDto cancelListingDto)
+    {
+        Optional<Listing> listing = listingRepository.findById(cancelListingDto.getListingId());
+        if(listing.isPresent()){
+            ListingDto listingDtoRequest = modelMapper.map(listing, ListingDto.class);
+            listingDtoRequest.setListingStatus(ListingStatus.CANCELLED);
+
+            Listing saveListing = modelMapper.map(listingDtoRequest, Listing.class);
+            listingRepository.save(saveListing);
+        }
+        else{
+            throw new ListingNotFoundException("No listing found to change status to cancelled");
+        }
     }
 
     public List<ListingDto> getAllListingsById(UUID userId)
@@ -92,5 +108,27 @@ public class ListingService {
         else
             throw new ResourceNotFoundException();
         return null;
+    }
+
+    public List<MakeOfferDto> getAllOffersOfNftAtAuction(UUID listingId){
+        Optional<Listing> listing = listingRepository.findById(listingId);
+
+        if(listing.isPresent()){
+            List<Offer> offers = offerRepository.findAllByListingId(listingId);
+
+            if(!offers.isEmpty())
+            {
+                List<MakeOfferDto> offerDtoList = offers.stream()
+                        .map(Offer -> modelMapper.map(Offer, MakeOfferDto.class))
+                        .collect(Collectors.toList());
+
+                return offerDtoList;
+            }
+            else
+                throw new NoOffersFoundForListingException("No Offers found for listing given");
+        }
+        else{
+            throw new NoListingsFoundException("No listings found with given listing");
+        }
     }
 }

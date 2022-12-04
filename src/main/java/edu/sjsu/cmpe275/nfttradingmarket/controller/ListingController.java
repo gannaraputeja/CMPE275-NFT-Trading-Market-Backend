@@ -1,5 +1,6 @@
 package edu.sjsu.cmpe275.nfttradingmarket.controller;
 
+import edu.sjsu.cmpe275.nfttradingmarket.dto.CancelListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.MakeOfferDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
@@ -42,7 +43,7 @@ public class ListingController {
         return ResponseEntity.ok().body(NewListingResponse);
     }
 
-    @PostMapping(path = "/makeoffer", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/makeOffer", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MakeOfferDto> makeAnOfferForAuctionedListing(@RequestBody MakeOfferDto makeOfferDto){
         //Convert DTO to entity
         Offer offerRequest = modelMapper.map(makeOfferDto, Offer.class);
@@ -62,5 +63,17 @@ public class ListingController {
     @GetMapping(path = "/nft/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
     public List<NftDto> getAllNftListingsByUser(@PathVariable("userId") UUID userId){
         return listingService.getAllNftListingsByUser(userId);
+    }
+
+    @PostMapping(path = "/cancelListing", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public void cancelListing(@RequestBody CancelListingDto cancelListingDto)
+    {
+        listingService.cancelListingOfId(cancelListingDto);
+    }
+
+    @GetMapping(path= "/offers/{listingId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MakeOfferDto> getAllOffersOfNftAtAuction(@PathVariable("listingId") UUID listingId)
+    {
+        return listingService.getAllOffersOfNftAtAuction(listingId);
     }
 }
