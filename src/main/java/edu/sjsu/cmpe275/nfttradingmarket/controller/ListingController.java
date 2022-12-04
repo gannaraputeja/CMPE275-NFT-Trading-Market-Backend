@@ -56,12 +56,12 @@ public class ListingController {
         return ResponseEntity.ok().body(makeOfferResponse);
     }
 
-    @GetMapping(path = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/getAllListings/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ListingDto> getAllListingsByUser(@PathVariable("userId") UUID userId){
         return listingService.getAllListingsById(userId);
     }
 
-    @GetMapping(path = "/nft/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/getAllNftsForSale/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
     public List<NftDto> getAllNftListingsByUser(@PathVariable("userId") UUID userId){
         return listingService.getAllNftListingsByUser(userId);
     }
