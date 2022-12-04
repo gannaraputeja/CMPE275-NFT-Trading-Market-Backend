@@ -1,6 +1,5 @@
 package edu.sjsu.cmpe275.nfttradingmarket.service;
 
-import edu.sjsu.cmpe275.nfttradingmarket.dto.CancelListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.MakeOfferDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
@@ -15,6 +14,7 @@ import edu.sjsu.cmpe275.nfttradingmarket.repository.OfferRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,19 +44,18 @@ public class ListingService {
         return offerRepository.save(offer);
     }
 
-    public void cancelListingOfId(CancelListingDto cancelListingDto)
+    public ResponseEntity<ListingDto> cancelListingOfId(UUID listingId)
     {
-        Optional<Listing> listing = listingRepository.findById(cancelListingDto.getListingId());
-        if(listing.isPresent()){
-            ListingDto listingDtoRequest = modelMapper.map(listing, ListingDto.class);
-            listingDtoRequest.setListingStatus(ListingStatus.CANCELLED);
+        Listing updateListing = listingRepository.findById(listingId)
+                .orElseThrow(()->new ListingNotFoundException("No listing available with given listingId"));
 
-            Listing saveListing = modelMapper.map(listingDtoRequest, Listing.class);
-            listingRepository.save(saveListing);
-        }
-        else{
-            throw new ListingNotFoundException("No listing found to change status to cancelled");
-        }
+        updateListing.setStatus(ListingStatus.CANCELLED);
+
+        listingRepository.save(updateListing);
+
+        ListingDto newListingDtoResponse = modelMapper.map(updateListing, ListingDto.class);
+
+        return ResponseEntity.ok().body(newListingDtoResponse);
     }
 
     public List<ListingDto> getAllListingsById(UUID userId)

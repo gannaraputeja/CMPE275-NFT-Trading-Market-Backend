@@ -7,6 +7,7 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Listing;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Offer;
 import edu.sjsu.cmpe275.nfttradingmarket.service.ListingService;
+import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -65,10 +66,10 @@ public class ListingController {
         return listingService.getAllNftListingsByUser(userId);
     }
 
-    @PostMapping(path = "/cancelListing", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void cancelListing(@RequestBody CancelListingDto cancelListingDto)
+    @PutMapping(path = "/cancelListing/{listingId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ListingDto> cancelListing(@PathVariable("listingId") UUID listingId)
     {
-        listingService.cancelListingOfId(cancelListingDto);
+        return listingService.cancelListingOfId(listingId);
     }
 
     @GetMapping(path= "/offers/{listingId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
