@@ -140,4 +140,62 @@ public class ListingService {
             throw new NoListingsFoundException("No listings found with given listing");
         }
     }
+
+    public List<ListingDto> getAllListingsWithOffers(){
+        List<Listing>listings = listingRepository.findAll();
+
+        List<Listing> responseList = new ArrayList<>();
+
+        for (Listing listing : listings) {
+            List<Offer> offers = offerRepository.findAllByListingId(listing.getId());
+
+            if(offers.size()>0)
+                responseList.add(listing);
+        }
+
+        List<ListingDto> responseDtoList = responseList.stream().map(Listing -> modelMapper.map(Listing, ListingDto.class))
+                .collect(Collectors.toList());
+
+        return responseDtoList;
+    }
+
+    public List<ListingDto> getAllListingsWithoutOffers(){
+        List<Listing>listings = listingRepository.findAll();
+
+        List<Listing> responseList = new ArrayList<>();
+
+        for (Listing listing : listings) {
+            List<Offer> offers = offerRepository.findAllByListingId(listing.getId());
+
+            if(offers.size()==0)
+                responseList.add(listing);
+        }
+
+        List<ListingDto> responseDtoList = responseList.stream().map(Listing -> modelMapper.map(Listing, ListingDto.class))
+                .collect(Collectors.toList());
+
+        return responseDtoList;
+    }
+
+    public List<ListingDto> getAllListingsWithActiveOffers(){
+        List<Listing>listings = listingRepository.findAll();
+
+        List<Listing> responseList = new ArrayList<>();
+
+        for (Listing listing : listings) {
+            List<Offer> offers = offerRepository.findAllByListingId(listing.getId());
+
+            for(Offer offer: offers){
+                if(offer.getStatus()==OfferStatus.NEW) {
+                    responseList.add(listing);
+                    break;
+                }
+            }
+        }
+
+        List<ListingDto> responseDtoList = responseList.stream().map(Listing -> modelMapper.map(Listing, ListingDto.class))
+                .collect(Collectors.toList());
+
+        return responseDtoList;
+    }
 }

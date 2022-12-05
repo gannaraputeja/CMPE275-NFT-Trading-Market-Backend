@@ -80,4 +80,19 @@ public class ListingController {
     {
         return listingService.getAllOffersOfNftAtAuction(listingId);
     }
+
+    @GetMapping(path="/getAllListingsWithOffers", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<ListingDto> getAllListingsWithOffers(){
+        return listingService.getAllListingsWithOffers();
+    }
+
+    @GetMapping(path="/getAllListingsWithoutOffers", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<ListingDto> getAllListingsWithoutOffers(){
+        return listingService.getAllListingsWithoutOffers();
+    }
+
+    @GetMapping(path="/getAllListingsWithActiveOffers", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<ListingDto> getAllListingsWithActiveOffers() {
+        return listingService.getAllListingsWithActiveOffers();
+    }
 }

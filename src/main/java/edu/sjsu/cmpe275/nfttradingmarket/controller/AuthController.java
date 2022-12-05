@@ -48,5 +48,4 @@ public class AuthController {
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
         return userService.loginUser(loginRequestDTO, authenticationManager);
     }
-
 }
