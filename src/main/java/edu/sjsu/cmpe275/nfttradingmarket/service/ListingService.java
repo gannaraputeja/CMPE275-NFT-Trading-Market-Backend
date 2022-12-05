@@ -198,4 +198,17 @@ public class ListingService {
 
         return responseDtoList;
     }
+
+    public ResponseEntity<MakeOfferDto> updateOfferAcceptedStatus(UUID offerId){
+        Offer updateOffer = offerRepository.findById(offerId)
+                .orElseThrow(()-> new OfferNotAvailabeException("Offer not available to cancel"));
+
+        updateOffer.setStatus(OfferStatus.ACCEPTED);
+
+        offerRepository.save(updateOffer);
+
+        MakeOfferDto newOfferDtoResponse = modelMapper.map(updateOffer, MakeOfferDto.class);
+
+        return ResponseEntity.ok().body(newOfferDtoResponse);
+    }
 }
