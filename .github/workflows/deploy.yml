@@ -7,7 +7,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: backend server ssh connection
+      - name: deploy backend app
         uses: appleboy/ssh-action@master
         with:
           host: 137.184.112.89
