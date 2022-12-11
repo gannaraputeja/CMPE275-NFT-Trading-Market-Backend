@@ -1,0 +1,20 @@
+name: Deployment Workflow
+on:
+  push:
+    branches: [ main ]
+jobs:
+  deploy_job:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: backend server ssh connection
+        uses: appleboy/ssh-action@master
+        with:
+          host: 137.184.112.89
+          username: root
+          key: ${{ secrets.ID_RSA_GITHUB_CMPE275 }}
+          port: 22
+          script:  |
+            cd CMPE275-NFT-Trading-Market-Backend
+            git pull origin main
+            git status
