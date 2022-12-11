@@ -1,4 +1,4 @@
-name: Deployment Workflow
+name: Backend App Deployment Workflow
 on:
   push:
     branches: [ main ]
