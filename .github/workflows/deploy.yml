@@ -18,3 +18,7 @@ jobs:
             cd CMPE275-NFT-Trading-Market-Backend
             git pull origin main
             git status
+            /root/apps/scripts/build.sh
+            /root/apps/scripts/stop.sh 
+            /root/apps/scripts/start.sh
+            /root/apps/scripts/status.sh
