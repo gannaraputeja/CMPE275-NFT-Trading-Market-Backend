@@ -24,5 +24,5 @@ public class NftDto {
     private Date createdOn;
     private UUID creatorId;
     private UUID ownerId;
-    private ListingType listingType;
+   // private ListingType listingType;
 }

@@ -4,7 +4,6 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.CurrencyTransactionDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.CurrencyTransaction;
 import edu.sjsu.cmpe275.nfttradingmarket.service.CurrencyTransactionService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +24,7 @@ public class CurrencyTransactionController {
         this.currencyTransactionService = currencyTransactionService;
     }
 
-    @PostMapping(path="/create", consumes= MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path= "/createDepositOrWithdrawTransaction", consumes= MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CurrencyTransactionDto> createCurrencyTransaction(@RequestBody CurrencyTransactionDto currencyTransactionDto){
         //convert DTO to entity
         this.modelMapper.typeMap(CurrencyTransaction.class, CurrencyTransactionDto.class).
