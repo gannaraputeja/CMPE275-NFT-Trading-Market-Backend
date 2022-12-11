@@ -53,9 +53,15 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private ConfirmationToken confirmationToken;
 
-    public User(String username, String nickname, String password) {
+    public User(String username, String nickname, String password, String firstname, String lastname,
+                UserRole role, Boolean enabled, Boolean locked) {
         this.username = username;
         this.nickname = nickname;
         this.password = password;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.role = role;
+        this.enabled = enabled;
+        this.locked = locked;
     }
 }

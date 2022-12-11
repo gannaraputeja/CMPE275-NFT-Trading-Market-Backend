@@ -1,5 +1,7 @@
 package edu.sjsu.cmpe275.nfttradingmarket.service;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.SignUpRequestDTO;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.response.JWTResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.LoginRequestDTO;
@@ -7,9 +9,10 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Currency;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.ConfirmationTokenRepository;
-import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRespository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.security.MyUserPrincipal;
 import edu.sjsu.cmpe275.nfttradingmarket.security.config.JWTConfig;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +25,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,7 +40,7 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
 
     @Autowired
-    private UserRespository userRespository;
+    private UserRepository userRepository;
 
     @Autowired
     private ConfirmationTokenRepository confirmationTokenRepository;
@@ -49,22 +54,25 @@ public class UserService implements UserDetailsService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private GoogleIdTokenVerifier verifier;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRespository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User with username %s not found", username)));
         return new MyUserPrincipal(user);
     }
 
     public ResponseEntity<Object> registerUser(SignUpRequestDTO signUpRequestDTO) {
 
-        if (userRespository.existsByUsername(signUpRequestDTO.getUsername())) {
+        if (userRepository.existsByUsername(signUpRequestDTO.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already use!"));
         }
 
-        if (userRespository.existsByNickname(signUpRequestDTO.getNickname())) {
+        if (userRepository.existsByNickname(signUpRequestDTO.getNickname())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Nickname is already in taken!"));
@@ -72,27 +80,24 @@ public class UserService implements UserDetailsService {
 
         // Create new user's account
         User user = new User(signUpRequestDTO.getUsername(), signUpRequestDTO.getNickname(),
-                bCryptPasswordEncoder.encode(signUpRequestDTO.getPassword()));
-        user.setFirstname(signUpRequestDTO.getFirstname());
-        user.setLastname(signUpRequestDTO.getLastname());
-        user.setRole(UserRole.USER);
-        user.setEnabled(false); // TODO: Set to false until email validation
-        user.setLocked(false);
+                bCryptPasswordEncoder.encode(signUpRequestDTO.getPassword()),
+                signUpRequestDTO.getFirstname(), signUpRequestDTO.getLastname(),
+                UserRole.USER, false, false);
 
         // Create Wallet
         Wallet wallet = createWallet(user);
         user.setWallet(wallet);
 
         // Create ConfirmationToken
-        UUID token = UUID.randomUUID();
+        UUID uuidToken = UUID.randomUUID();
 
-        ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(),
+        ConfirmationToken confirmationToken = new ConfirmationToken(uuidToken, LocalDateTime.now(),
                 LocalDateTime.now().plusMinutes(15), user);
         user.setConfirmationToken(confirmationToken);
 
-        userRespository.save(user);
+        userRepository.save(user);
 
-        emailService.send(user.getUsername(), user.getFirstname(), token.toString());
+        emailService.send(user.getUsername(), user.getFirstname(), uuidToken.toString());
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
@@ -116,7 +121,7 @@ public class UserService implements UserDetailsService {
 
     public ResponseEntity<?> loginUser(LoginRequestDTO loginRequestDTO, AuthenticationManager authenticationManager) {
 
-        if (!userRespository.existsByUsername(loginRequestDTO.getUsername())) {
+        if (!userRepository.existsByUsername(loginRequestDTO.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username does not exist!"));
@@ -163,7 +168,7 @@ public class UserService implements UserDetailsService {
 
     public ResponseEntity<?> resendValidationEmail(String username) {
 
-        User user = userRespository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User with username %s not found", username)));
 
         if(user.getEnabled()) {
@@ -177,12 +182,70 @@ public class UserService implements UserDetailsService {
         user.getConfirmationToken().setUser(user);
         user.getConfirmationToken().setConfirmedOn(null);
 
-        userRespository.save(user);
+        userRepository.save(user);
 
         emailService.send(user.getUsername(), user.getFirstname(), token.toString());
 
         return ResponseEntity.ok(new MessageResponse("Verification email sent successfully!"));
 
+    }
+
+    public ResponseEntity<?> oAuthLogin(String token) throws GeneralSecurityException, IOException {
+
+        GoogleIdToken idToken = verifier.verify(token);
+        if (idToken != null) {
+            GoogleIdToken.Payload payload = idToken.getPayload();
+
+            Optional<User> user = userRepository.findByUsername(payload.getEmail());
+
+            // Create User if not already exists
+            if(!user.isPresent()) {
+                return ResponseEntity.badRequest().body(new MessageResponse("User not found."));
+            } else {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+                String jwt = jwtConfig.generateJwtToken(authentication);
+
+                MyUserPrincipal userPrincipal = (MyUserPrincipal) authentication.getPrincipal();
+
+                List<String> roles = userPrincipal.getAuthorities().stream()
+                        .map(item -> item.getAuthority())
+                        .collect(Collectors.toList());
+
+                JWTResponse jwtResponse = new JWTResponse(jwt, userPrincipal.getId(), userPrincipal.getUsername(), roles, userPrincipal.isEnabled());
+                return ResponseEntity.ok(jwtResponse);
+            }
+
+        }
+        return ResponseEntity.badRequest().body(new MessageResponse("Invalid token."));
+
+    }
+
+    public UserDetails provisionNewUser(GoogleIdToken.Payload payload) {
+
+        String randomString = RandomStringUtils.randomAlphanumeric(6).toUpperCase();
+        String nickname = String.valueOf(payload.get("name")).replace(" ", "").concat(randomString);
+
+        // Create new user's account
+        User newUser = new User(payload.getEmail(), nickname, null, String.valueOf(payload.get("given_name")),
+                String.valueOf(payload.get("family_name")), UserRole.USER, false, false);
+
+        // Create Wallet
+        Wallet wallet = createWallet(newUser);
+        newUser.setWallet(wallet);
+
+        // Create ConfirmationToken
+        UUID uuidToken = UUID.randomUUID();
+
+        ConfirmationToken confirmationToken = new ConfirmationToken(uuidToken, LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15), newUser);
+        newUser.setConfirmationToken(confirmationToken);
+
+        userRepository.save(newUser);
+
+        emailService.send(newUser.getUsername(), newUser.getFirstname(), uuidToken.toString());
+
+        return new MyUserPrincipal(newUser);
     }
 
 }

@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-	implementation('org.modelmapper:modelmapper:3.1.0')
+	implementation 'org.modelmapper:modelmapper:3.1.0'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -28,6 +28,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+	implementation 'com.google.api-client:google-api-client:2.1.0'
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'

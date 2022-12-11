@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 /**
  * This is Passenger Entity.
@@ -29,12 +31,22 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @PostMapping(path = "/signup", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/local/signup", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
         return userService.registerUser(signUpRequestDTO);
     }
 
-    @GetMapping(path = "/validate/email", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/local/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
+        return userService.loginUser(loginRequestDTO, authenticationManager);
+    }
+
+    @PostMapping(path = "/oauth/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> oAuthLogin(@Valid @RequestParam String token) throws GeneralSecurityException, IOException {
+        return userService.oAuthLogin(token);
+    }
+
+    @PostMapping(path = "/validate/email", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> confirmEmail(@NotBlank @RequestParam String token) {
         return userService.confirmEmail(token);
     }
@@ -44,9 +56,5 @@ public class AuthController {
         return userService.resendValidationEmail(username);
     }
 
-    @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
-        return userService.loginUser(loginRequestDTO, authenticationManager);
-    }
 
 }

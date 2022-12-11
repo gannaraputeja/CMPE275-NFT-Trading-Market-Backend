@@ -5,7 +5,7 @@ import edu.sjsu.cmpe275.nfttradingmarket.entity.Offer;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.User;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.ListingRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.OfferRepository;
-import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRespository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRepository;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +18,12 @@ public class ListingService {
     private final ListingRepository listingRepository;
     private final OfferRepository offerRepository;
 
-    private final UserRespository userRespository;
+    private final UserRepository userRepository;
 
-    public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRespository userRespository) {
+    public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRepository userRepository) {
         this.listingRepository = listingRepository;
         this.offerRepository = offerRepository;
-        this.userRespository = userRespository;
+        this.userRepository = userRepository;
     }
 
     public Listing createNFT(Listing listing){
@@ -35,7 +35,7 @@ public class ListingService {
     }
 
     public List<Listing> getAllListingsById(UUID userId){
-        Optional<User> user = userRespository.findById(userId);
+        Optional<User> user = userRepository.findById(userId);
 
         List<Listing> result = listingRepository.findAllByUserId(user.get());
 
