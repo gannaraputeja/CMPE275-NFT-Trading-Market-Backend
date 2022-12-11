@@ -1,10 +1,12 @@
 package edu.sjsu.cmpe275.nfttradingmarket.security.config;
 
-import edu.sjsu.cmpe275.nfttradingmarket.security.AuthEntryPointJWT;
+import edu.sjsu.cmpe275.nfttradingmarket.security.AuthEntryPoint;
+import edu.sjsu.cmpe275.nfttradingmarket.security.GoogleIdAuthenticationProvider;
 import edu.sjsu.cmpe275.nfttradingmarket.security.AuthTokenFilter;
 import edu.sjsu.cmpe275.nfttradingmarket.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -30,6 +32,7 @@ import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
+@ComponentScan(basePackages = {"edu.sjsu.cmpe275.nfttradingmarket.security"})
 public class WebSecurityConfig {
 
     @Autowired
@@ -39,7 +42,13 @@ public class WebSecurityConfig {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    private AuthEntryPointJWT unauthorizedHandler;
+    private AuthEntryPoint unauthorizedHandler;
+
+    @Autowired
+    private AuthenticationConfiguration authConfig;
+
+    @Autowired
+    private GoogleIdAuthenticationProvider googleIdAuthenticationProvider;
 
     @Bean
     public AuthTokenFilter authenticationJWTTokenFilter() {
@@ -58,6 +67,7 @@ public class WebSecurityConfig {
         .anyRequest().authenticated();
 
         http.authenticationProvider(daoAuthenticationProvider());
+        http.authenticationProvider(googleIdAuthenticationProvider);
 
         http.addFilterBefore(authenticationJWTTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
@@ -73,7 +83,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+    public AuthenticationManager authenticationManager() throws Exception {
         return authConfig.getAuthenticationManager();
     }
 

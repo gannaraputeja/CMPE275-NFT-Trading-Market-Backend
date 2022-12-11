@@ -28,6 +28,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
+    private String tokenParamName = "token";
+
     @Autowired
     private JWTConfig jwtConfig;
 
@@ -39,17 +41,35 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String jwt = parseJwt(request);
-            if (jwt != null && jwtConfig.validateJwtToken(jwt)) {
-                String username = jwtConfig.getUserNameFromJwtToken(jwt);
 
-                UserDetails userDetails = userService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
-                        userDetails.getAuthorities());
+            String token = request.getParameter(tokenParamName);
+
+            if (token == null) {
+                // No token present. Validate Local authentication
+                String jwt = parseJwt(request);
+                if (jwt != null && jwtConfig.validateJwtToken(jwt)) {
+                    String username = jwtConfig.getUserNameFromJwtToken(jwt);
+
+                    UserDetails userDetails = userService.loadUserByUsername(username);
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
+                            userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } else {
+                // token present. Validate Google authentication
+                Object details = new WebAuthenticationDetailsSource().buildDetails(request);
+
+                GoogleIdAuthenticationToken authentication = new GoogleIdAuthenticationToken(token, details);
+
+                //Authentication authResult = authenticationManager.authenticate(authRequest);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+
+
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e);
         }

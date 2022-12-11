@@ -3,6 +3,7 @@ package edu.sjsu.cmpe275.nfttradingmarket.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -21,14 +22,16 @@ public class EmailService {
 
     private final static Logger logger = LoggerFactory.getLogger(EmailService.class);
 
+    @Value("${app.url}")
+    private String appUrl;
+
     @Autowired
     private JavaMailSender mailSender;
 
-    @Async
     public void send(String username, String firstname, String token) {
         try {
 
-            String link = "http://localhost:8080/api/v1/auth/validate/email?token=" + token;
+            String link = appUrl + "/account/verify?token=" + token;
             String body = buildEmail(firstname, link);
 
             MimeMessage mimeMessage = mailSender.createMimeMessage();
