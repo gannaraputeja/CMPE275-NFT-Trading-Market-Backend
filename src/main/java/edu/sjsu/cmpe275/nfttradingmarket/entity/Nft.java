@@ -29,6 +29,7 @@ public class Nft {
     private UUID smartContractAddress;
     private String name;
     private String type;
+    @Column(length = 500)
     private String description;
     private String imageURL;
     private String assetURL;

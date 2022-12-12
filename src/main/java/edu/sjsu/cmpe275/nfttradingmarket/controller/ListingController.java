@@ -64,6 +64,11 @@ public class ListingController {
         return listingService.getAllNftListingsByUser(userId);
     }
 
+    @GetMapping(path = "/getAllNewListedNfts", consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<NftDto> getAllNewListedNFTs(){
+        return listingService.getAllNewListedNFTs();
+    }
+
     @PutMapping(path = "/cancelListing/{listingId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ListingDto> cancelListing(@PathVariable("listingId") UUID listingId)
     {

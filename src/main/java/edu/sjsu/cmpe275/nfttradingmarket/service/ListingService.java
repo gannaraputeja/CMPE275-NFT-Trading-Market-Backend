@@ -73,7 +73,7 @@ public class ListingService {
         Optional<User> user = userRepository.findById(userId);
         if(user.isPresent())
         {
-            List<Listing> result = listingRepository.findAllListingsByUser(user);
+            List<Listing> result = listingRepository.findAllByUser(user);
             if(!result.isEmpty()) {
                 List<ListingDto> listingDtoList = result
                         .stream()
@@ -93,7 +93,7 @@ public class ListingService {
         Optional<User> user = userRepository.findById(userId);
         if(user.isPresent())
         {
-            List<Listing> result = listingRepository.findAllListingsByUser(user);
+            List<Listing> result = listingRepository.findAllByUser(user);
             if(!result.isEmpty())
             {
                 List<Optional<Nft>> nftList = new ArrayList<>();
@@ -117,6 +117,18 @@ public class ListingService {
         else
             throw new ResourceNotFoundException();
         return null;
+    }
+
+    public List<NftDto> getAllNewListedNFTs(){
+        List<Listing> listings = listingRepository.findAllByStatusOrderByListingTimeDesc(ListingStatus.NEW);
+        List<Nft> nftList = listings.stream().map(listing -> listing.getNft()).collect(Collectors.toList());
+
+        List<NftDto> nftDtoList = nftList
+                .stream()
+                .map(Nft -> modelMapper.map(Nft, NftDto.class))
+                .collect(Collectors.toList());
+
+        return nftDtoList;
     }
 
     public List<MakeOfferDto> getAllOffersOfNftAtAuction(UUID listingId){

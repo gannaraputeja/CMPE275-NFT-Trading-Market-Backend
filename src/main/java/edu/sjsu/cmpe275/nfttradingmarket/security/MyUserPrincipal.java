@@ -63,4 +63,8 @@ public class MyUserPrincipal implements UserDetails {
         return user.getEnabled();
     }
 
+    public User getUser() {
+        return user;
+    }
+
 }

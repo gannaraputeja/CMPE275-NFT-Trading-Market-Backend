@@ -145,7 +145,9 @@ public class UserService implements UserDetailsService {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
-        JWTResponse jwtResponse = new JWTResponse(jwt, userPrincipal.getId(), userPrincipal.getUsername(), roles, userPrincipal.isEnabled());
+        JWTResponse jwtResponse = new JWTResponse(jwt, userPrincipal.getId(), userPrincipal.getUsername(),
+                userPrincipal.getUser().getFirstname().concat(" ").concat(userPrincipal.getUser().getLastname()),
+                roles, userPrincipal.isEnabled());
         return ResponseEntity.ok(jwtResponse);
     }
 
@@ -212,7 +214,9 @@ public class UserService implements UserDetailsService {
                         .map(item -> item.getAuthority())
                         .collect(Collectors.toList());
 
-                JWTResponse jwtResponse = new JWTResponse(jwt, userPrincipal.getId(), userPrincipal.getUsername(), roles, userPrincipal.isEnabled());
+                JWTResponse jwtResponse = new JWTResponse(jwt, userPrincipal.getId(), userPrincipal.getUsername(),
+                        userPrincipal.getUser().getFirstname().concat(" ").concat(userPrincipal.getUser().getLastname()),
+                        roles, userPrincipal.isEnabled());
                 return ResponseEntity.ok(jwtResponse);
             }
 

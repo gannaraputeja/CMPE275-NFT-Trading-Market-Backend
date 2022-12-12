@@ -19,6 +19,7 @@ public class JWTResponse implements Serializable {
     private String jwt;
     private UUID id;
     private String username;
+    private String name;
     private List<String> roles;
     private Boolean enabled;
 
