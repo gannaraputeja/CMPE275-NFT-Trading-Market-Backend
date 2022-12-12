@@ -21,3 +21,4 @@ jobs:
             /root/apps/scripts/build.sh
             /root/apps/scripts/stop.sh 
             /root/apps/scripts/start.sh
+            jps -l
