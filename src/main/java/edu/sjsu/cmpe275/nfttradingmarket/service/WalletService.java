@@ -16,6 +16,7 @@ import edu.sjsu.cmpe275.nfttradingmarket.repository.WalletRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,6 +41,9 @@ public class WalletService {
     }
 
     public Nft createNFT(Nft nft){
+        nft.setSmartContractAddress(UUID.randomUUID());
+        nft.setCreatedOn(new Date());
+        nft.setLastRecordedTime(new Date());
         return nftRepository.save(nft);
     }
 
@@ -48,18 +52,13 @@ public class WalletService {
     }
 
     public List<NftDto> getNfsById(UUID userId){
-        List<Nft> nftList = nftRepository.findAllByOwnerId(userId);
-        if(!nftList.isEmpty())
-        {
-            List<NftDto> nftDtoList = nftList
-                    .stream()
-                    .map(Nft -> modelMapper.map(Nft, NftDto.class))
-                    .collect(Collectors.toList());
+        List<Nft> nftList = nftRepository.findAllByOwnerIdOrderByCreatedOnDesc(userId);
+        List<NftDto> nftDtoList = nftList
+                .stream()
+                .map(Nft -> modelMapper.map(Nft, NftDto.class))
+                .collect(Collectors.toList());
 
-            return nftDtoList;
-        }
-        else
-            throw new NftNotFoundException("No NFTs available for user ID");
+        return nftDtoList;
     }
 
     public List<CurrencyDto> getCurrencyAmountsById(UUID userId){

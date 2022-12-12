@@ -1,5 +1,6 @@
 package edu.sjsu.cmpe275.nfttradingmarket.security.config;
 
+import edu.sjsu.cmpe275.nfttradingmarket.entity.UserRole;
 import edu.sjsu.cmpe275.nfttradingmarket.security.AuthEntryPoint;
 import edu.sjsu.cmpe275.nfttradingmarket.security.GoogleIdAuthenticationProvider;
 import edu.sjsu.cmpe275.nfttradingmarket.security.AuthTokenFilter;
@@ -63,7 +64,7 @@ public class WebSecurityConfig {
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests()
         .antMatchers("/", "/api/v1/auth/**", "/api/v1/public/**", "/resources/**").permitAll()
-        .antMatchers("/api/**").permitAll()//.hasRole(UserRole.USER) // TODO: set USER Role
+        .antMatchers("/api/**").permitAll()//.hasRole(UserRole.USER.name()) // TODO: set USER Role
         .anyRequest().authenticated();
 
         http.authenticationProvider(daoAuthenticationProvider());
