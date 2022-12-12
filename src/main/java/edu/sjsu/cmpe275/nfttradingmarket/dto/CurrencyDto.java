@@ -9,7 +9,7 @@ import java.util.UUID;
 @Getter
 @Setter
 public class CurrencyDto {
-    private UUID userId;
+    private UUID currencyId;
     private Double amount;
     private CurrencyType currencyType;
     private UUID walletId;

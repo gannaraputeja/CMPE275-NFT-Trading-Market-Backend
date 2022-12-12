@@ -4,16 +4,20 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.CurrencyDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Currency;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Nft;
+import edu.sjsu.cmpe275.nfttradingmarket.entity.User;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Wallet;
 import edu.sjsu.cmpe275.nfttradingmarket.exception.CurrencyAmountsNotAvailableForUserException;
 import edu.sjsu.cmpe275.nfttradingmarket.exception.NftNotFoundException;
+import edu.sjsu.cmpe275.nfttradingmarket.exception.UserNotFoundException;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.CurrencyRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.NftRepository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.WalletRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -23,13 +27,16 @@ public class WalletService {
     private final WalletRepository walletRepository;
     private final ModelMapper modelMapper;
     private final CurrencyRepository currencyRepository;
+    private final UserRepository userRepository;
 
     public WalletService(NftRepository nftRepository, WalletRepository walletRepository, ModelMapper modelMapper,
-                         CurrencyRepository currencyRepository) {
+                         CurrencyRepository currencyRepository,
+                         UserRepository userRepository) {
         this.nftRepository = nftRepository;
         this.walletRepository = walletRepository;
         this.modelMapper = modelMapper;
         this.currencyRepository = currencyRepository;
+        this.userRepository = userRepository;
     }
 
     public Nft createNFT(Nft nft){
@@ -56,7 +63,9 @@ public class WalletService {
     }
 
     public List<CurrencyDto> getCurrencyAmountsById(UUID userId){
-        List<Currency> currencyList = currencyRepository.findAllById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User does not exist."));
+
+        List<Currency> currencyList = currencyRepository.findAllByWalletId(user.getWallet().getId());
 
         if(!currencyList.isEmpty())
         {
