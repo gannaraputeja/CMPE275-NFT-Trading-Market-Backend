@@ -31,7 +31,7 @@ public class EmailService {
     public void send(String username, String firstname, String token) {
         try {
 
-            String link = appUrl + "/account/verify?token=" + token;
+            String link = appUrl + "/account/verify/" + token;
             String body = buildEmail(firstname, link);
 
             MimeMessage mimeMessage = mailSender.createMimeMessage();
