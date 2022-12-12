@@ -42,8 +42,8 @@ public class AuthController {
     }
 
     @PostMapping(path = "/oauth/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> oAuthLogin(@Valid @RequestParam String token) throws GeneralSecurityException, IOException {
-        return userService.oAuthLogin(token);
+    public ResponseEntity<?> oAuthLogin(@Valid @RequestParam String googleIdToken) throws GeneralSecurityException, IOException {
+        return userService.oAuthLogin(googleIdToken);
     }
 
     @PostMapping(path = "/validate/email", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

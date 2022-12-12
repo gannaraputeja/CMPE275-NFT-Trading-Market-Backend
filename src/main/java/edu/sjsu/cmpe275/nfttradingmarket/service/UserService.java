@@ -190,9 +190,9 @@ public class UserService implements UserDetailsService {
 
     }
 
-    public ResponseEntity<?> oAuthLogin(String token) throws GeneralSecurityException, IOException {
+    public ResponseEntity<?> oAuthLogin(String googleIdToken) throws GeneralSecurityException, IOException {
 
-        GoogleIdToken idToken = verifier.verify(token);
+        GoogleIdToken idToken = verifier.verify(googleIdToken);
         if (idToken != null) {
             GoogleIdToken.Payload payload = idToken.getPayload();
 
