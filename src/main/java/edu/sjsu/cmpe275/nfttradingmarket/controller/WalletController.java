@@ -1,4 +1,5 @@
 package edu.sjsu.cmpe275.nfttradingmarket.controller;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.CurrencyDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.WalletDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Nft;
@@ -54,9 +55,14 @@ public class WalletController {
         return ResponseEntity.ok().body(nftResponse);
     }
 
-    @GetMapping(path="/getALlNfts/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path="/getALlNfts/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<NftDto> getNftsById(@PathVariable("userId") UUID userId)
     {
         return walletService.getNfsById(userId);
+    }
+
+    @GetMapping(path="getAllCurrencyAmounts/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CurrencyDto> getAllCurrencyAmountsById(@PathVariable("userId") UUID userId){
+        return walletService.getCurrencyAmountsById(userId);
     }
 }
