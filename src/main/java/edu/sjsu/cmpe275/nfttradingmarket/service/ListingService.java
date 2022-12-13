@@ -10,13 +10,17 @@ import edu.sjsu.cmpe275.nfttradingmarket.repository.NftRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.OfferRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ListingService {
     private final ListingRepository listingRepository;
     private final OfferRepository offerRepository;
@@ -74,11 +78,20 @@ public class ListingService {
 
         List<Listing> result = listingRepository.findAllByUser(user);
 
+        ModelMapper mapper = new ModelMapper();
+        mapper.addMappings(new PropertyMap<Nft, NftDto>() {
+            @Override
+            protected void configure() {
+                // Tells ModelMapper to skip backreference Listing
+                skip().setListing(null);
+            }
+        });
+
         List<ListingDto> listingDtoList = result
                 .stream()
-                .map(Listing -> modelMapper.map(Listing, ListingDto.class))
+                .map(Listing -> mapper.map(Listing, ListingDto.class))
                 .collect(Collectors.toList());
-
+        
         return listingDtoList;
     }
 
