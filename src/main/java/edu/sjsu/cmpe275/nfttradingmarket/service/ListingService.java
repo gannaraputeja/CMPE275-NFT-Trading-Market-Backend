@@ -38,6 +38,10 @@ public class ListingService {
     }
 
     public Listing createListing(Listing listing){
+        if(!userRepository.existsById(listing.getUser().getId()))
+            throw new UserNotFoundException("User does not exist.");
+        listing.setStatus(ListingStatus.NEW);
+        listing.setListingTime(new Date());
         return listingRepository.save(listing);
     }
 
@@ -129,9 +133,18 @@ public class ListingService {
         List<Listing> listings = listingRepository.findAllByStatusOrderByListingTimeDesc(ListingStatus.NEW);
         List<Nft> nftList = listings.stream().map(listing -> listing.getNft()).collect(Collectors.toList());
 
+        ModelMapper mapper = new ModelMapper();
+        mapper.addMappings(new PropertyMap<Listing, ListingDto>() {
+            @Override
+            protected void configure() {
+                // Tells ModelMapper to skip backreference Listing
+                skip().setNft(null);
+            }
+        });
+
         List<NftDto> nftDtoList = nftList
                 .stream()
-                .map(Nft -> modelMapper.map(Nft, NftDto.class))
+                .map(Nft -> mapper.map(Nft, NftDto.class))
                 .collect(Collectors.toList());
 
         return nftDtoList;
