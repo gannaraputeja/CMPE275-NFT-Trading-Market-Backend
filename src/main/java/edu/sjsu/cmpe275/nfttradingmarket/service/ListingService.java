@@ -129,25 +129,24 @@ public class ListingService {
         return null;
     }
 
-    public List<NftDto> getAllNewListedNFTs(){
+    public List<ListingDto> getAllNewListings(){
         List<Listing> listings = listingRepository.findAllByStatusOrderByListingTimeDesc(ListingStatus.NEW);
-        List<Nft> nftList = listings.stream().map(listing -> listing.getNft()).collect(Collectors.toList());
 
         ModelMapper mapper = new ModelMapper();
-        mapper.addMappings(new PropertyMap<Listing, ListingDto>() {
+        mapper.addMappings(new PropertyMap<Nft, NftDto>() {
             @Override
             protected void configure() {
                 // Tells ModelMapper to skip backreference Listing
-                skip().setNft(null);
+                skip().setListing(null);
             }
         });
 
-        List<NftDto> nftDtoList = nftList
+        List<ListingDto> listingDtoList = listings
                 .stream()
-                .map(Nft -> mapper.map(Nft, NftDto.class))
+                .map(listing -> mapper.map(listing, ListingDto.class))
                 .collect(Collectors.toList());
 
-        return nftDtoList;
+        return listingDtoList;
     }
 
     public List<MakeOfferDto> getAllOffersOfNftAtAuction(UUID listingId){
