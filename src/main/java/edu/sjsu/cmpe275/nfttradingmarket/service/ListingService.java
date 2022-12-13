@@ -33,7 +33,7 @@ public class ListingService {
         this.nftRepository = nftRepository;
     }
 
-    public Listing createNFT(Listing listing){
+    public Listing createListing(Listing listing){
         return listingRepository.save(listing);
     }
 

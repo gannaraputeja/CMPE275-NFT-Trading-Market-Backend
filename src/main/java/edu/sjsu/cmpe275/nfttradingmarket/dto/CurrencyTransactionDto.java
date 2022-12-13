@@ -17,6 +17,6 @@ public class CurrencyTransactionDto {
     private UUID userId;
     private CurrencyType currencyType;
     private CurrencyTransactionType type;
-    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="MM-dd-yyyy HH:mm:ss")
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "America/Los_Angeles")
     private Date createdOn;
 }

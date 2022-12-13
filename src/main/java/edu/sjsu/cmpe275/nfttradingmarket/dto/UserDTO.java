@@ -20,7 +20,6 @@ public class UserDTO implements Serializable {
     private String firstname;
     private String lastname;
     private String nickname;
-    private String password;
     private Boolean enabled;
     private Boolean locked;
     private UserRole role;

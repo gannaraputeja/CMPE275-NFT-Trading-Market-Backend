@@ -4,13 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.CurrencyType;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.ListingStatus;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.ListingType;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data @NoArgsConstructor
 public class ListingDto {
     private UUID id;
     private Double amount;
@@ -19,6 +18,6 @@ public class ListingDto {
     private UUID nftTokenId;
     private UUID userId;
     private ListingStatus listingStatus;
-    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="MM-dd-yyyy HH:mm:ss")
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "America/Los_Angeles")
     private Date listingTime;
 }

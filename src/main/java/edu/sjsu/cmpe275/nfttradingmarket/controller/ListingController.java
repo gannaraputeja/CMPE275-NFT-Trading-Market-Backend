@@ -35,7 +35,7 @@ public class ListingController {
 
         Listing listingRequest = modelMapper.map(listingDto, Listing.class);
 
-        Listing listing = listingService.createNFT(listingRequest);
+        Listing listing = listingService.createListing(listingRequest);
 
         //entity to DTO
         ListingDto NewListingResponse = modelMapper.map(listing, ListingDto.class);

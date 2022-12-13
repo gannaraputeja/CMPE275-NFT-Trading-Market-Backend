@@ -36,7 +36,7 @@ public class Listing {
     private Nft nft;
     @Enumerated(EnumType.STRING)
     private ListingStatus status;
-    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="MM-dd-yyyy HH:mm:ss")
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "America/Los_Angeles")
     private Date listingTime;
     @OneToMany(mappedBy = "listing")
     private List<Offer> offer;

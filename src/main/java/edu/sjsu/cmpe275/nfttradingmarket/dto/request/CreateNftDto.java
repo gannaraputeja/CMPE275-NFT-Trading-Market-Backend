@@ -1,4 +1,4 @@
-package edu.sjsu.cmpe275.nfttradingmarket.dto;
+package edu.sjsu.cmpe275.nfttradingmarket.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class NftDto {
+public class CreateNftDto {
     private UUID tokenId;
     private UUID smartContractAddress;
     private String name;
@@ -23,7 +23,4 @@ public class NftDto {
     private Date createdOn;
     private UUID creatorId;
     private UUID ownerId;
-    private UserDTO creator;
-    private UserDTO owner;
-    private ListingDto listing;
 }
