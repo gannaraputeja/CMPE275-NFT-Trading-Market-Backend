@@ -138,25 +138,16 @@ public class ListingService {
     }
 
     public List<MakeOfferDto> getAllOffersOfNftAtAuction(UUID listingId){
-        Optional<Listing> listing = listingRepository.findById(listingId);
+        Listing listing = listingRepository.findById(listingId)
+                .orElseThrow(()->new ListingNotFoundException("No listing available with given listingId"));
 
-        if(listing.isPresent()){
-            List<Offer> offers = offerRepository.findAllByListingId(listingId);
+        List<Offer> offers = offerRepository.findAllByListingId(listingId);
 
-            if(!offers.isEmpty())
-            {
-                List<MakeOfferDto> offerDtoList = offers.stream()
-                        .map(Offer -> modelMapper.map(Offer, MakeOfferDto.class))
-                        .collect(Collectors.toList());
+        List<MakeOfferDto> offerDtoList = offers.stream()
+                .map(Offer -> modelMapper.map(Offer, MakeOfferDto.class))
+                .collect(Collectors.toList());
 
-                return offerDtoList;
-            }
-            else
-                throw new NoOffersFoundForListingException("No Offers found for listing given");
-        }
-        else{
-            throw new NoListingsFoundException("No listings found with given listing");
-        }
+        return offerDtoList;
     }
 
     public List<ListingDto> getAllListingsWithOffers(){
