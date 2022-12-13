@@ -51,7 +51,7 @@ public class WalletService {
         return walletRepository.save(wallet);
     }
 
-    public List<NftDto> getNfsById(UUID userId){
+    public List<NftDto> getNfsByUserId(UUID userId){
         List<Nft> nftList = nftRepository.findAllByOwnerIdOrderByCreatedOnDesc(userId);
         List<NftDto> nftDtoList = nftList
                 .stream()

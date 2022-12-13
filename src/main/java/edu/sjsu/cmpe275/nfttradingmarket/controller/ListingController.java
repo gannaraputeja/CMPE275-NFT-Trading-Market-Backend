@@ -64,7 +64,7 @@ public class ListingController {
         return listingService.getAllNftListingsByUser(userId);
     }
 
-    @GetMapping(path = "/getAllNewListedNfts", consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/getAllNewListedNfts", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<NftDto> getAllNewListedNFTs(){
         return listingService.getAllNewListedNFTs();
     }
