@@ -3,6 +3,7 @@ package edu.sjsu.cmpe275.nfttradingmarket.controller;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.MakeOfferDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.request.ListingRequestDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Listing;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Offer;
 import edu.sjsu.cmpe275.nfttradingmarket.service.ListingService;
@@ -27,13 +28,13 @@ public class ListingController {
     }
 
     @PostMapping(path = "/createListing", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ListingDto> createListing(@RequestBody ListingDto listingDto){
+    public ResponseEntity<ListingDto> createListing(@RequestBody ListingRequestDto listingRequestDto){
         //Convert DTO to entity
-        this.modelMapper.typeMap(Listing.class, ListingDto.class)
-                .addMapping(src->src.getNft().getTokenId(), ListingDto::setNftTokenId)
-                .addMapping(src->src.getUser().getId(), ListingDto::setUserId);
+        this.modelMapper.typeMap(Listing.class, ListingRequestDto.class)
+                .addMapping(src->src.getNft().getTokenId(), ListingRequestDto::setNftTokenId)
+                .addMapping(src->src.getUser().getId(), ListingRequestDto::setUserId);
 
-        Listing listingRequest = modelMapper.map(listingDto, Listing.class);
+        Listing listingRequest = modelMapper.map(listingRequestDto, Listing.class);
 
         Listing listing = listingService.createListing(listingRequest);
 

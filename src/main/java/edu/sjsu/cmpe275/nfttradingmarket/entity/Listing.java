@@ -39,5 +39,5 @@ public class Listing {
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "America/Los_Angeles")
     private Date listingTime;
     @OneToMany(mappedBy = "listing")
-    private List<Offer> offer;
+    private List<Offer> offers;
 }

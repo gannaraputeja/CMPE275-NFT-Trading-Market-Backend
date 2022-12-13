@@ -70,30 +70,23 @@ public class ListingService {
 
     public List<ListingDto> getAllListingsById(UUID userId)
     {
-        Optional<User> user = userRepository.findById(userId);
-        if(user.isPresent())
-        {
-            List<Listing> result = listingRepository.findAllByUser(user);
-            if(!result.isEmpty()) {
-                List<ListingDto> listingDtoList = result
-                        .stream()
-                        .map(Listing -> modelMapper.map(Listing, ListingDto.class))
-                        .collect(Collectors.toList());
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User does not exist."));
 
-                return listingDtoList;
-            }
-            else
-                throw new NoListingsFoundException("No listings found for User");
-        }
-        else
-            throw new UserNotFoundException("User not found exception");
+        List<Listing> result = listingRepository.findAllByUser(user);
+
+        List<ListingDto> listingDtoList = result
+                .stream()
+                .map(Listing -> modelMapper.map(Listing, ListingDto.class))
+                .collect(Collectors.toList());
+
+        return listingDtoList;
     }
 
     public List<NftDto> getAllNftListingsByUser(UUID userId){
         Optional<User> user = userRepository.findById(userId);
         if(user.isPresent())
         {
-            List<Listing> result = listingRepository.findAllByUser(user);
+            List<Listing> result = listingRepository.findAllByUser(user.get());
             if(!result.isEmpty())
             {
                 List<Optional<Nft>> nftList = new ArrayList<>();
