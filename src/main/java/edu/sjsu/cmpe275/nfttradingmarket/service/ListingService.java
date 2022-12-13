@@ -19,8 +19,8 @@ import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Service
 @Transactional
+@Service
 public class ListingService {
     private final ListingRepository listingRepository;
     private final OfferRepository offerRepository;

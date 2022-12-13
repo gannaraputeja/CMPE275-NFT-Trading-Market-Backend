@@ -31,7 +31,9 @@ public class Nft {
     private String type;
     @Column(length = 500)
     private String description;
+    @Column(length = 500)
     private String imageURL;
+    @Column(length = 500)
     private String assetURL;
     private Date lastRecordedTime;
     private Date createdOn;

@@ -11,12 +11,14 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.transaction.Transactional;
 
 /**
  * This is Passenger Entity.
  * @author Raviteja Gannarapu, Sarat Kumar Kaniti, Sai Charan Peda, Ramya Kotha
  */
 
+@Transactional
 @Service
 public class EmailService {
 

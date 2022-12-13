@@ -10,8 +10,12 @@ import edu.sjsu.cmpe275.nfttradingmarket.repository.CurrencyTransactionRepositor
 import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
+@Transactional
 @Service
 public class CurrencyTransactionService {
+
     private final CurrencyTransactionRepository currencyTransactionRepository;
     private final CurrencyRepository currencyRepository;
     private final UserRepository userRepository;
