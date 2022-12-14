@@ -1,5 +1,7 @@
 package edu.sjsu.cmpe275.nfttradingmarket.advice;
 
+import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
+import edu.sjsu.cmpe275.nfttradingmarket.exception.*;
 import edu.sjsu.cmpe275.nfttradingmarket.util.Util;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -48,5 +50,14 @@ public class GlobalAdvice extends ResponseEntityExceptionHandler {
 
         return Util.prepareErrorResponse(e.getMessage(), headers, status);
     }
+
+    @ExceptionHandler(value = {UserNotFoundException.class, CurrencyNotFoundException.class, ListingNotFoundException.class,
+            NftNotFoundException.class, InvalidNFTTransactionException.class, InsufficientCurrencyException.class})
+    public ResponseEntity<Object> handleBadRequest(RuntimeException e, WebRequest request) {
+
+        return handleExceptionInternal(e, new MessageResponse(e.getMessage()),
+                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
 
 }

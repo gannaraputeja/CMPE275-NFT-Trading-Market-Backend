@@ -22,7 +22,9 @@ public class CurrencyTransaction {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID id;
+    @Column(precision=10, scale = 2)
     private Double amount;
+    @Column(precision=10, scale = 2)
     private Double availableAmount;
     @ManyToOne
     private User user;

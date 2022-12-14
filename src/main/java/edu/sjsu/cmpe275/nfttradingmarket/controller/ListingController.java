@@ -4,6 +4,7 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.MakeOfferDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.ListingRequestDto;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Listing;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Offer;
 import edu.sjsu.cmpe275.nfttradingmarket.service.ListingService;
@@ -28,7 +29,7 @@ public class ListingController {
     }
 
     @PostMapping(path = "/createListing", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ListingDto> createListing(@RequestBody ListingRequestDto listingRequestDto){
+    public ResponseEntity<MessageResponse> createListing(@RequestBody ListingRequestDto listingRequestDto){
         return listingService.createListing(listingRequestDto);
     }
 

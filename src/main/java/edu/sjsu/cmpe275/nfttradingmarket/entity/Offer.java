@@ -29,6 +29,7 @@ public class Offer {
     private Nft nft;
     @ManyToOne
     private Listing listing;
+    @Column(precision=10, scale = 2)
     private Double amount;
     private Date createdOn;
     private Date expirationTime;

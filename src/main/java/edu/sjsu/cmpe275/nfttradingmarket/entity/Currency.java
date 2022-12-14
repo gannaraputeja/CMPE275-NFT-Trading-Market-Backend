@@ -16,6 +16,7 @@ public class Currency {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID id;
+    @Column(precision=10, scale = 2)
     private Double amount;
     @Enumerated(EnumType.STRING)
     private CurrencyType type;

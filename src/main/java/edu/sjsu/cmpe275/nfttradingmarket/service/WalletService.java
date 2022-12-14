@@ -92,7 +92,8 @@ public class WalletService {
             throw new CurrencyAmountsNotAvailableForUserException("No currency amounts available for User Id");
     }
 
-    public ResponseEntity<MessageResponse> buyNft(BuyNftDto buyNftDto) throws UserNotFoundException {
+    public ResponseEntity<MessageResponse> buyNft(BuyNftDto buyNftDto) throws UserNotFoundException, ListingNotFoundException
+        , NftNotFoundException, InvalidNFTTransactionException, InsufficientCurrencyException {
         User user = userRepository.findById(buyNftDto.getUserId()).orElseThrow(() -> new UserNotFoundException("User does not exist."));
         Currency currency = user.getWallet().getCurrencyList().stream()
                 .filter( cur -> cur.getType().equals(buyNftDto.getCurrencyType()))

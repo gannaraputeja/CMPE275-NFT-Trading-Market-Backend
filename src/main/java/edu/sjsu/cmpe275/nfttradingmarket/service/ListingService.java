@@ -4,6 +4,7 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.MakeOfferDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.ListingRequestDto;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
 import edu.sjsu.cmpe275.nfttradingmarket.exception.*;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.ListingRepository;
@@ -38,7 +39,7 @@ public class ListingService {
         this.nftRepository = nftRepository;
     }
 
-    public ResponseEntity<ListingDto> createListing(ListingRequestDto listingRequestDto){
+    public ResponseEntity<MessageResponse> createListing(ListingRequestDto listingRequestDto){
 
         //Convert DTO to entity
 //        this.modelMapper.typeMap(Listing.class, ListingRequestDto.class)
@@ -62,9 +63,7 @@ public class ListingService {
         listingRequest.setListingTime(new Date());
         listingRepository.save(listingRequest);
 
-        //entity to DTO
-        ListingDto NewListingResponse = modelMapper.map(listingRequest, ListingDto.class);
-        return ResponseEntity.ok().body(NewListingResponse);
+        return ResponseEntity.ok().body(new MessageResponse("NFT listed for sale successfully."));
     }
 
     public Offer makeOffer(Offer offer){
