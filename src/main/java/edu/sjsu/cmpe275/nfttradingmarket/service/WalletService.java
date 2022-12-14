@@ -44,11 +44,12 @@ public class WalletService {
         this.offerRepository = offerRepository;
     }
 
-    public Nft createNFT(Nft nft){
+    public ResponseEntity<MessageResponse> createNFT(Nft nft){
         nft.setSmartContractAddress(UUID.randomUUID());
         nft.setCreatedOn(new Date());
         nft.setLastRecordedTime(new Date());
-        return nftRepository.save(nft);
+        nftRepository.save(nft);
+        return ResponseEntity.ok().body(new MessageResponse("NFT created successfully."));
     }
 
     public Wallet createWallet(Wallet wallet){

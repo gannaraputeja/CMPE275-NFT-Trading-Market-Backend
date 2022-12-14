@@ -44,7 +44,7 @@ public class WalletController {
     }
 
     @PostMapping(path = "/createNft", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<NftDto> createNft(@RequestBody CreateNftDto createNftDto){
+    public ResponseEntity<MessageResponse> createNft(@RequestBody CreateNftDto createNftDto){
         this.modelMapper.typeMap(Nft.class, CreateNftDto.class)
                         .addMapping(src->src.getCreator().getId(), CreateNftDto::setCreatorId)
                         .addMapping(src->src.getOwner().getId(), CreateNftDto::setOwnerId);
@@ -52,11 +52,7 @@ public class WalletController {
         //Convert DTO to entity
         Nft nftRequest = modelMapper.map(createNftDto, Nft.class);
 
-        Nft nft = walletService.createNFT(nftRequest);
-
-        //entity to DTO
-        NftDto nftResponse = modelMapper.map(nft, NftDto.class);
-        return ResponseEntity.ok().body(nftResponse);
+        return walletService.createNFT(nftRequest);
     }
 
     @GetMapping(path="/getAllNfts/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
