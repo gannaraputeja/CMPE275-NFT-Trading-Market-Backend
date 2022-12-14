@@ -88,8 +88,8 @@ public class ListingController {
         return listingService.getAllListingsWithActiveOffers();
     }
 
-    @PutMapping(path = "/acceptOffer/{offerId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MakeOfferDto> acceptOffer(@PathVariable("offerId") UUID offerId){
+    @PostMapping(path = "/acceptOffer/{offerId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<MessageResponse> acceptOffer(@PathVariable("offerId") UUID offerId){
         return listingService.updateOfferAcceptedStatus(offerId);
     }
 }

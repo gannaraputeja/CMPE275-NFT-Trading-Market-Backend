@@ -9,11 +9,7 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Currency;
 import edu.sjsu.cmpe275.nfttradingmarket.exception.*;
-import edu.sjsu.cmpe275.nfttradingmarket.repository.ListingRepository;
-import edu.sjsu.cmpe275.nfttradingmarket.repository.NftRepository;
-import edu.sjsu.cmpe275.nfttradingmarket.repository.OfferRepository;
-import edu.sjsu.cmpe275.nfttradingmarket.repository.NftTransactionRepository;
-import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRepository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -34,14 +30,17 @@ public class ListingService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final NftRepository nftRepository;
+    private final CurrencyRepository currencyRepository;
 
-    public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRepository userRepository, ModelMapper modelMapper, NftRepository nftRepository, NftTransactionRepository nftTransactionRepository) {
+    public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRepository userRepository, ModelMapper modelMapper, NftRepository nftRepository, NftTransactionRepository nftTransactionRepository,
+                          CurrencyRepository currencyRepository) {
         this.listingRepository = listingRepository;
         this.offerRepository = offerRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.nftRepository = nftRepository;
         this.nftTransactionRepository = nftTransactionRepository;
+        this.currencyRepository = currencyRepository;
     }
 
     public ResponseEntity<MessageResponse> createListing(ListingRequestDto listingRequestDto){
@@ -296,30 +295,78 @@ public class ListingService {
         return responseDtoList;
     }
 
-    public void createNFTTransaction(Offer offer) {
-        User buyer = offer.getUser();
-        Nft currentNft = offer.getNft();
-        User seller = currentNft.getOwner();
-        NftTransaction nftTransaction = new NftTransaction();
-        nftTransaction.setBuyer(buyer);
-        nftTransaction.setSeller(seller);
-        nftTransaction.setCurrencyType(offer.getListing().getCurrencyType());
-        nftTransaction.setListingType(offer.getListing().getSellType());
-        nftTransaction.setNft(currentNft);
-        nftTransaction.setCreatedOn(new Date());
-        NftTransaction nftT = nftTransactionRepository.save(nftTransaction);
-    }
+//    public void createNFTTransaction(Offer offer) {
+//        User buyer = offer.getUser();
+//        Nft currentNft = offer.getNft();
+//        User seller = currentNft.getOwner();
+//        NftTransaction nftTransaction = new NftTransaction();
+//        nftTransaction.setBuyer(buyer);
+//        nftTransaction.setSeller(seller);
+//        nftTransaction.setCurrencyType(offer.getListing().getCurrencyType());
+//        nftTransaction.setListingType(offer.getListing().getSellType());
+//        nftTransaction.setNft(currentNft);
+//        nftTransaction.setCreatedOn(new Date());
+//        NftTransaction nftT = nftTransactionRepository.save(nftTransaction);
+//    }
 
-    public ResponseEntity<MakeOfferDto> updateOfferAcceptedStatus(UUID offerId){
+    public ResponseEntity<MessageResponse> updateOfferAcceptedStatus(UUID offerId){
         Offer updateOffer = offerRepository.findById(offerId)
                 .orElseThrow(()-> new OfferNotAvailabeException("Offer not available to cancel"));
 
-        updateOffer.setStatus(OfferStatus.ACCEPTED);
-        createNFTTransaction(updateOffer);
+        User buyer = updateOffer.getUser();
+        Nft currentNft = updateOffer.getNft();
+        User seller = currentNft.getOwner();
 
+        Currency currency = buyer.getWallet().getCurrencyList().stream().
+                filter(cur->cur.getType().equals(updateOffer.getListing().getCurrencyType()))
+                .findFirst().orElseThrow(() -> new CurrencyNotFoundException("No currency found"));
+
+        // total of all active offers amount with same currency type
+        List<Offer> offers = offerRepository.findAllByUserIdAndStatus(buyer.getId(), OfferStatus.NEW);
+        Double totalOffersAmount = offers.stream()
+                .filter(offer -> offer.getListing().getCurrencyType().equals(updateOffer.getListing().getCurrencyType()))
+                .mapToDouble(offer -> offer.getAmount().doubleValue()).sum();
+
+        if(currency.getAmount() < totalOffersAmount){
+            throw new InsufficientCurrencyException("Insufficient balance for buyer");
+        }
+        //deducting amount for offer made to buy NFT at auction
+        currency.setAmount(currency.getAmount()-updateOffer.getAmount());
+        currencyRepository.save(currency);
+
+        //Created NFT transaction from seller to buyer
+        NftTransaction nftTransaction = new NftTransaction();
+        nftTransaction.setBuyer(buyer);
+        nftTransaction.setSeller(seller);
+        nftTransaction.setCurrencyType(updateOffer.getListing().getCurrencyType());
+        nftTransaction.setListingType(updateOffer.getListing().getSellType());
+        nftTransaction.setNft(currentNft);
+        nftTransaction.setCreatedOn(new Date());
+        NftTransaction nftT = nftTransactionRepository.save(nftTransaction);
+
+        //update NFT
+        currentNft.setOwner(buyer);
+        currentNft.setLastRecordedTime(new Date());
+        currentNft.setSmartContractAddress(UUID.randomUUID());
+        nftRepository.save(currentNft);
+
+        //Update Listing status to SOLD
+        Listing listing = updateOffer.getListing();
+        listing.setStatus(ListingStatus.SOLD);
+        listingRepository.save(listing);
+
+        //Update offer status to accepted
+        updateOffer.setStatus(OfferStatus.ACCEPTED);
         offerRepository.save(updateOffer);
 
-        MakeOfferDto newOfferDtoResponse = modelMapper.map(updateOffer, MakeOfferDto.class);
-        return ResponseEntity.ok().body(newOfferDtoResponse);
+        //Update all other offers of listing with status NEW to rejected
+        offerRepository.findAllByListingIdAndStatus(updateOffer.getListing().getId(), OfferStatus.NEW)
+                .stream().filter(offer-> !offer.getUser().getId().equals(buyer.getId()))
+                .forEach(offer->{
+                    offer.setStatus(OfferStatus.REJECTED);
+                    offerRepository.save(offer);
+                });
+
+        return ResponseEntity.ok().body(new MessageResponse("Successfully accepted offer."));
     }
 }
