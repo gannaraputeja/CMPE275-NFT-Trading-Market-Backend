@@ -87,7 +87,7 @@ public class ListingService {
             @Override
             protected void configure() {
                 // Tells ModelMapper to skip backreference Listing
-                skip().setListing(null);
+                skip().setListings(new ArrayList<>());
             }
         });
 
@@ -137,7 +137,7 @@ public class ListingService {
             @Override
             protected void configure() {
                 // Tells ModelMapper to skip backreference Listing
-                skip().setListing(null);
+                skip().setListings(new ArrayList<>());
             }
         });
 

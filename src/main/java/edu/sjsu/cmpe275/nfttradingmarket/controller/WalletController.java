@@ -3,7 +3,9 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.CurrencyDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.WalletDto;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.request.BuyNftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.CreateNftDto;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Nft;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Wallet;
 import edu.sjsu.cmpe275.nfttradingmarket.service.WalletService;
@@ -66,4 +68,10 @@ public class WalletController {
     public List<CurrencyDto> getAllCurrencyAmountsById(@PathVariable("userId") UUID userId){
         return walletService.getCurrencyAmountsById(userId);
     }
+
+    @PostMapping(path="/buyNft", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<MessageResponse> buyNft(@RequestBody BuyNftDto buyNftDto) {
+        return walletService.buyNft(buyNftDto);
+    }
+
 }

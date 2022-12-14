@@ -18,6 +18,7 @@ import java.util.UUID;
 
 //@Repository
 public interface ListingRepository extends JpaRepository<Listing, UUID> {
+   Optional<Listing> findById(UUID id);
    List<Listing> findAllByUser(User user);
    List<Listing> findAllByStatusOrderByListingTimeDesc(ListingStatus status);
 }

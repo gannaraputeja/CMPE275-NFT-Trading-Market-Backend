@@ -32,7 +32,7 @@ public class Listing {
     private CurrencyType currencyType;
     @Enumerated(EnumType.STRING)
     private ListingType sellType;
-    @OneToOne
+    @ManyToOne
     private Nft nft;
     @Enumerated(EnumType.STRING)
     private ListingStatus status;

@@ -1,6 +1,7 @@
 package edu.sjsu.cmpe275.nfttradingmarket.repository;
 
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Offer;
+import edu.sjsu.cmpe275.nfttradingmarket.entity.OfferStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -12,5 +13,6 @@ import java.util.UUID;
  */
 
 public interface OfferRepository extends JpaRepository<Offer, UUID> {
-    public List<Offer> findAllByListingId(UUID listingId);
+    List<Offer> findAllByListingId(UUID listingId);
+    List<Offer> findAllByUserIdAndStatus(UUID userId, OfferStatus status);
 }

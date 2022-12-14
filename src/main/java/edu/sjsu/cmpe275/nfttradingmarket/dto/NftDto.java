@@ -2,11 +2,9 @@ package edu.sjsu.cmpe275.nfttradingmarket.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -26,5 +24,5 @@ public class NftDto {
     private UUID ownerId;
     private UserDTO creator;
     private UserDTO owner;
-    private ListingDto listing;
+    private List<ListingDto> listings;
 }
