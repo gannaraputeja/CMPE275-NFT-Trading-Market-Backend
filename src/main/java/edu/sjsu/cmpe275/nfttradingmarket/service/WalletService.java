@@ -129,6 +129,7 @@ public class WalletService {
         listingRepository.save(listing);
         nft.setSmartContractAddress(UUID.randomUUID());
         nft.setOwner(user);
+        nft.setLastRecordedTime(new Date());
         nftRepository.save(nft);
         return ResponseEntity.ok(new MessageResponse("Transaction successful."));
     }
