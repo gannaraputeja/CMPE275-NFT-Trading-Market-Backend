@@ -55,7 +55,7 @@ public class ListingController {
         return ResponseEntity.ok().body(makeOfferResponse);
     }
 
-    @GetMapping(path = "/getAllListings/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/getAllListings/{userId}",produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ListingDto> getAllListingsByUser(@PathVariable("userId") UUID userId){
         return listingService.getAllListingsById(userId);
     }
