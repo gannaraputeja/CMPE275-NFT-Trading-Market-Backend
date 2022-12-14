@@ -64,7 +64,7 @@ public class WebSecurityConfig {
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests()
         .antMatchers("/", "/api/v1/auth/**", "/api/v1/public/**", "/resources/**").permitAll()
-        .antMatchers("/api/**").permitAll()//.hasRole(UserRole.USER.name()) // TODO: set USER Role
+        .antMatchers("/api/v1/**").hasRole("USER")
         .anyRequest().authenticated();
 
         http.authenticationProvider(daoAuthenticationProvider());
