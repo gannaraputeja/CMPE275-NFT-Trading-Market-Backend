@@ -2,6 +2,7 @@ package edu.sjsu.cmpe275.nfttradingmarket.service;
 
 import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.MakeOfferDto;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.NftTransactionDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.ListingRequestDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
@@ -9,6 +10,7 @@ import edu.sjsu.cmpe275.nfttradingmarket.exception.*;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.ListingRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.NftRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.OfferRepository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.NftTransactionRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -25,17 +27,19 @@ import java.util.stream.Collectors;
 public class ListingService {
     private final ListingRepository listingRepository;
     private final OfferRepository offerRepository;
+    private final NftTransactionRepository nftTransactionRepository;
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final NftRepository nftRepository;
 
-    public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRepository userRepository, ModelMapper modelMapper, NftRepository nftRepository) {
+    public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRepository userRepository, ModelMapper modelMapper, NftRepository nftRepository, NftTransactionRepository nftTransactionRepository) {
         this.listingRepository = listingRepository;
         this.offerRepository = offerRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.nftRepository = nftRepository;
+        this.nftTransactionRepository = nftTransactionRepository;
     }
 
     public ResponseEntity<ListingDto> createListing(ListingRequestDto listingRequestDto){
@@ -261,16 +265,30 @@ public class ListingService {
         return responseDtoList;
     }
 
+    public void createNFTTransaction(Offer offer) {
+        User buyer = offer.getUser();
+        Nft currentNft = offer.getNft();
+        User seller = currentNft.getOwner();
+        NftTransaction nftTransaction = new NftTransaction();
+        nftTransaction.setBuyer(buyer);
+        nftTransaction.setSeller(seller);
+        nftTransaction.setCurrencyType(offer.getListing().getCurrencyType());
+        nftTransaction.setListingType(offer.getListing().getSellType());
+        nftTransaction.setNft(currentNft);
+        nftTransaction.setCreatedOn(new Date());
+        NftTransaction nftT = nftTransactionRepository.save(nftTransaction);
+    }
+
     public ResponseEntity<MakeOfferDto> updateOfferAcceptedStatus(UUID offerId){
         Offer updateOffer = offerRepository.findById(offerId)
                 .orElseThrow(()-> new OfferNotAvailabeException("Offer not available to cancel"));
 
         updateOffer.setStatus(OfferStatus.ACCEPTED);
+        createNFTTransaction(updateOffer);
 
         offerRepository.save(updateOffer);
 
         MakeOfferDto newOfferDtoResponse = modelMapper.map(updateOffer, MakeOfferDto.class);
-
         return ResponseEntity.ok().body(newOfferDtoResponse);
     }
 }
