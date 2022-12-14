@@ -129,7 +129,7 @@ public class ListingService {
         return null;
     }
 
-    public List<ListingDto> getAllNewListings(){
+    public List<ListingDto> getAllNewListingsWithNewOffers(){
         List<Listing> listings = listingRepository.findAllByStatusOrderByListingTimeDesc(ListingStatus.NEW);
 
         ModelMapper mapper = new ModelMapper();
@@ -141,10 +141,29 @@ public class ListingService {
             }
         });
 
-        List<ListingDto> listingDtoList = listings
-                .stream()
+        // Filter Offers with OfferStatus NEW
+        listings.stream()
+            .forEach(listing -> {
+                listing.setOffers(listing.getOffers()
+                        .stream().filter(offer -> offer.getStatus().equals(OfferStatus.NEW)).collect(Collectors.toList()));
+            });
+
+        List<ListingDto> listingDtoList = listings.stream()
                 .map(listing -> mapper.map(listing, ListingDto.class))
                 .collect(Collectors.toList());
+
+        // Calc price
+        listingDtoList.forEach(listingDto -> {
+            if(ListingType.AUCTION.equals(listingDto.getSellType())) {
+                if(listingDto.getOffers().size() == 0){
+                    listingDto.setPrice(listingDto.getAmount());
+                } else {
+                    listingDto.setPrice(listingDto.getOffers().stream().map(offer -> offer.getAmount()).max(Comparator.naturalOrder()).get());
+                }
+            } else {
+                listingDto.setPrice(listingDto.getAmount());
+            }
+        });
 
         return listingDtoList;
     }

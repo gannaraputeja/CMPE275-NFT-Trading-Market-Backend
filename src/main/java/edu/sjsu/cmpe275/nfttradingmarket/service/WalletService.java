@@ -4,6 +4,7 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.CurrencyDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
+import edu.sjsu.cmpe275.nfttradingmarket.entity.Currency;
 import edu.sjsu.cmpe275.nfttradingmarket.exception.CurrencyAmountsNotAvailableForUserException;
 import edu.sjsu.cmpe275.nfttradingmarket.exception.NftNotFoundException;
 import edu.sjsu.cmpe275.nfttradingmarket.exception.UserNotFoundException;
@@ -16,10 +17,7 @@ import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional

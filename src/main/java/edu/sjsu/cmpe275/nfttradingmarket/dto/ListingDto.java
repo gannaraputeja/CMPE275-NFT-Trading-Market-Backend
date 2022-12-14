@@ -14,6 +14,7 @@ import java.util.UUID;
 public class ListingDto {
     private UUID id;
     private Double amount;
+    private Double price;
     private CurrencyType currencyType;
     private ListingType sellType;
     private UUID nftTokenId;
