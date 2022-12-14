@@ -21,13 +21,16 @@ import java.util.UUID;
 
 //@Repository
 public interface ListingRepository extends JpaRepository<Listing, UUID> {
-   Optional<Listing> findById(UUID id);
+   long totalNFTSales = 0;
+
+Optional<Listing> findById(UUID id);
    List<Listing> findAllByUser(User user);
    List<Listing> findAllByStatusOrderByListingTimeDesc(ListingStatus status);
 
+
+   // Dashboard
    @Query(value = "SELECT count(*) from listing where status='NEW' and sell_type = ?1", nativeQuery = true)
    public long getActiveNFTSForSaleCountBySellType(String sellType);
-
 
    @Query(value = "SELECT count(*) from listing where status='NEW' and sell_type = ?1", nativeQuery = true)
    public long getActiveAuctionNFTSCountByOffersCondition(String sellType);
@@ -35,9 +38,33 @@ public interface ListingRepository extends JpaRepository<Listing, UUID> {
    @Query(value = "SELECT count(*) from offer where status='NEW'", nativeQuery = true)
    public long getTotalActiveOffers();
    
-   // @Query(value = "SELECT count(*) from offer where OfferStatus='NEW'", nativeQuery = true)
-   // long getActiveNFTSListedWithOutOffers();
-
    @Query(value = "SELECT count(*) from listing as lis inner join offer as off on lis.nft_token_id = off.nft_token_id where lis.status='NEW'", nativeQuery = true)
    long getActiveNFTSListedWithOffers();
+
+   //System Transaction Stats
+
+   @Query(value = "SELECT count(*) from currency_transaction where type='DEPOSIT'", nativeQuery = true)
+   public long getTotalDepositsCount();
+
+   @Query(value = "SELECT count(*) from currency_transaction where type='WITHDRAW'", nativeQuery = true)
+   public long getTotalWithdrawalsCount();
+
+   @Query(value = "SELECT sum(amount) from currency_transaction where type='DEPOSIT'", nativeQuery = true)
+   public long getTotalDepositCurrencyAmount();
+
+   @Query(value = "SELECT sum(amount) from currency_transaction where type='WITHDRAW'", nativeQuery = true)
+   public long getTotalWithdrawCurrencyAmount();
+
+   @Query(value = "SELECT count(*) from nft_transaction", nativeQuery = true)
+   public long getTotalNFTSales();
+
+   @Query(value = "SELECT sum(amount) from currency", nativeQuery = true)
+   public long getCurrentSystemBalance();
+
+
+   @Query(value = "SELECT sum(price) from nft_transaction", nativeQuery = true)
+   public long getTotalNFTSalesCurrencyAmount();
+
+
+
 }
