@@ -2,14 +2,14 @@ package edu.sjsu.cmpe275.nfttradingmarket.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.OfferStatus;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 public class MakeOfferDto {
     private UUID id;
     private Double amount;

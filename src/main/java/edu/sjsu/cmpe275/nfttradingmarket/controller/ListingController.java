@@ -34,15 +34,11 @@ public class ListingController {
     }
 
     @PostMapping(path = "/makeOffer", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MakeOfferDto> makeAnOfferForAuctionedListing(@RequestBody MakeOfferDto makeOfferDto){
+    public ResponseEntity<MessageResponse> makeAnOfferForAuctionedListing(@RequestBody MakeOfferDto makeOfferDto){
         //Convert DTO to entity
         Offer offerRequest = modelMapper.map(makeOfferDto, Offer.class);
 
-        Offer offer = listingService.makeOffer(offerRequest);
-
-        //entity to DTO
-        MakeOfferDto makeOfferResponse = modelMapper.map(offer, MakeOfferDto.class);
-        return ResponseEntity.ok().body(makeOfferResponse);
+        return listingService.makeOffer(offerRequest);
     }
 
     @GetMapping(path = "/getAllListings/{userId}",produces = MediaType.APPLICATION_JSON_VALUE)

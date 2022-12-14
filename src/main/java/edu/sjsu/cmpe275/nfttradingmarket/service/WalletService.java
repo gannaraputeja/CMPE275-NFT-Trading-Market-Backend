@@ -110,26 +110,24 @@ public class WalletService {
         } else if(listing.getAmount() > currency.getAmount() ||
                 listing.getAmount() > (currency.getAmount() - totalOffersAmount)) {
             throw new InsufficientCurrencyException("User has insufficient currency.");
-        } else {
-            NftTransaction nftTransaction = new NftTransaction();
-            nftTransaction.setNft(nft);
-            nftTransaction.setBuyer(user);
-            nftTransaction.setSeller(nft.getOwner());
-            nftTransaction.setPrice(listing.getAmount());
-            nftTransaction.setCurrencyType(listing.getCurrencyType());
-            nftTransaction.setListingType(listing.getSellType());
-            nftTransaction.setCreatedOn(new Date());
-            nftTransactionRepository.save(nftTransaction);
-            // deduct currency amount
-            currency.setAmount(currency.getAmount() - listing.getAmount());
-            currencyRepository.save(currency);
-            listing.setStatus(ListingStatus.SOLD);
-            listingRepository.save(listing);
-            nft.setSmartContractAddress(UUID.randomUUID());
-            nft.setOwner(user);
-            nftRepository.save(nft);
         }
-
+        NftTransaction nftTransaction = new NftTransaction();
+        nftTransaction.setNft(nft);
+        nftTransaction.setBuyer(user);
+        nftTransaction.setSeller(nft.getOwner());
+        nftTransaction.setPrice(listing.getAmount());
+        nftTransaction.setCurrencyType(listing.getCurrencyType());
+        nftTransaction.setListingType(listing.getSellType());
+        nftTransaction.setCreatedOn(new Date());
+        nftTransactionRepository.save(nftTransaction);
+        // deduct currency amount
+        currency.setAmount(currency.getAmount() - listing.getAmount());
+        currencyRepository.save(currency);
+        listing.setStatus(ListingStatus.SOLD);
+        listingRepository.save(listing);
+        nft.setSmartContractAddress(UUID.randomUUID());
+        nft.setOwner(user);
+        nftRepository.save(nft);
         return ResponseEntity.ok(new MessageResponse("Transaction successful."));
     }
 

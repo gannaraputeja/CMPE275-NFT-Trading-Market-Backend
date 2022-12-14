@@ -7,6 +7,7 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.ListingRequestDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
+import edu.sjsu.cmpe275.nfttradingmarket.entity.Currency;
 import edu.sjsu.cmpe275.nfttradingmarket.exception.*;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.ListingRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.NftRepository;
@@ -70,8 +71,38 @@ public class ListingService {
         return ResponseEntity.ok().body(new MessageResponse("NFT listed for sale successfully."));
     }
 
-    public Offer makeOffer(Offer offer){
-        return offerRepository.save(offer);
+    public ResponseEntity<MessageResponse> makeOffer(Offer offer) throws UserNotFoundException {
+        User user = userRepository.findById(offer.getUser().getId()).orElseThrow(() -> new UserNotFoundException("User not found"));
+        Nft nft = nftRepository.findById(offer.getNft().getTokenId()).orElseThrow(() -> new NftNotFoundException("NFT not found."));
+        Listing listing = listingRepository.findById(offer.getListing().getId()).orElseThrow(() -> new ListingNotFoundException("Listing not found."));
+
+        Currency currency = user.getWallet().getCurrencyList().stream()
+                .filter(cur -> cur.getType().equals(listing.getCurrencyType()))
+                .findFirst().orElseThrow(() -> new CurrencyNotFoundException("Currency not found."));
+
+        // total of all active offers amount
+        List<Offer> offers = offerRepository.findAllByUserIdAndStatus(offer.getUser().getId(), OfferStatus.NEW);
+        Double totalOffersAmount = offers.stream()
+                .filter(off -> !off.getNft().getTokenId().equals(offer.getNft().getTokenId()))
+                .mapToDouble(off -> off.getAmount().doubleValue()).sum();
+
+        if(!ListingStatus.NEW.equals(listing.getStatus())){
+            throw new InvalidNFTTransactionException("Invalid listing status.");
+        } else if(offer.getAmount() > currency.getAmount() ||
+                offer.getAmount() > (currency.getAmount() - totalOffersAmount)) {
+            throw new InsufficientCurrencyException("User has insufficient currency.");
+        }
+
+        offers.stream().filter(off -> off.getNft().getTokenId().equals(offer.getNft().getTokenId()))
+                .forEach(off->{
+                    off.setStatus(OfferStatus.CANCELLED);
+                    offerRepository.save(off);
+                });
+
+        offer.setStatus(OfferStatus.NEW);
+        offer.setCreatedOn(new Date());
+        offerRepository.save(offer);
+        return ResponseEntity.ok(new MessageResponse("Make offer successful."));
     }
 
     public ResponseEntity<ListingDto> updateListingCancellationStatus(UUID listingId)
