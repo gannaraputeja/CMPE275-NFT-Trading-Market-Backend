@@ -29,18 +29,7 @@ public class ListingController {
 
     @PostMapping(path = "/createListing", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ListingDto> createListing(@RequestBody ListingRequestDto listingRequestDto){
-        //Convert DTO to entity
-        this.modelMapper.typeMap(Listing.class, ListingRequestDto.class)
-                .addMapping(src->src.getNft().getTokenId(), ListingRequestDto::setNftTokenId)
-                .addMapping(src->src.getUser().getId(), ListingRequestDto::setUserId);
-
-        Listing listingRequest = modelMapper.map(listingRequestDto, Listing.class);
-
-        Listing listing = listingService.createListing(listingRequest);
-
-        //entity to DTO
-        ListingDto NewListingResponse = modelMapper.map(listing, ListingDto.class);
-        return ResponseEntity.ok().body(NewListingResponse);
+        return listingService.createListing(listingRequestDto);
     }
 
     @PostMapping(path = "/makeOffer", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -70,7 +59,7 @@ public class ListingController {
         return listingService.getAllNewListingsWithNewOffers();
     }
 
-    @PutMapping(path = "/cancelListing/{listingId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/cancelListing/{listingId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ListingDto> cancelListing(@PathVariable("listingId") UUID listingId)
     {
         return listingService.updateListingCancellationStatus(listingId);

@@ -3,6 +3,7 @@ package edu.sjsu.cmpe275.nfttradingmarket.service;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.MakeOfferDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.request.ListingRequestDto;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
 import edu.sjsu.cmpe275.nfttradingmarket.exception.*;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.ListingRepository;
@@ -37,12 +38,33 @@ public class ListingService {
         this.nftRepository = nftRepository;
     }
 
-    public Listing createListing(Listing listing){
-        if(!userRepository.existsById(listing.getUser().getId()))
+    public ResponseEntity<ListingDto> createListing(ListingRequestDto listingRequestDto){
+
+        //Convert DTO to entity
+//        this.modelMapper.typeMap(Listing.class, ListingRequestDto.class)
+//                .addMapping(src->src.getNft().getTokenId(), ListingRequestDto::setNftTokenId)
+//                .addMapping(src->src.getUser().getId(), ListingRequestDto::setUserId);
+
+        Listing listingRequest = modelMapper.map(listingRequestDto, Listing.class);
+
+//        ModelMapper mapper = new ModelMapper();
+//        mapper.addMappings(new PropertyMap<Nft, NftDto>() {
+//            @Override
+//            protected void configure() {
+//                // Tells ModelMapper to skip backreference Listing
+//                skip().setListing(null);
+//            }
+//        });
+
+        if(!userRepository.existsById(listingRequest.getUser().getId()))
             throw new UserNotFoundException("User does not exist.");
-        listing.setStatus(ListingStatus.NEW);
-        listing.setListingTime(new Date());
-        return listingRepository.save(listing);
+        listingRequest.setStatus(ListingStatus.NEW);
+        listingRequest.setListingTime(new Date());
+        listingRepository.save(listingRequest);
+
+        //entity to DTO
+        ListingDto NewListingResponse = modelMapper.map(listingRequest, ListingDto.class);
+        return ResponseEntity.ok().body(NewListingResponse);
     }
 
     public Offer makeOffer(Offer offer){
