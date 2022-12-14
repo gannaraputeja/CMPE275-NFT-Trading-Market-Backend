@@ -101,9 +101,11 @@ public class WalletService {
         Listing listing = listingRepository.findById(buyNftDto.getListingId()).orElseThrow(() -> new ListingNotFoundException("Listing not found."));
         Nft nft = nftRepository.findById(buyNftDto.getNftTokenId()).orElseThrow(() -> new NftNotFoundException("NFT not found."));
 
-        // total of all active offers amount
+        // total of all active offers amount with same currency type
         List<Offer> offers = offerRepository.findAllByUserIdAndStatus(buyNftDto.getUserId(), OfferStatus.NEW);
-        Double totalOffersAmount = offers.stream().mapToDouble(offer -> offer.getAmount().doubleValue()).sum();
+        Double totalOffersAmount = offers.stream()
+                .filter(offer -> offer.getListing().getCurrencyType().equals(buyNftDto.getCurrencyType()))
+                .mapToDouble(offer -> offer.getAmount().doubleValue()).sum();
 
         if(!ListingStatus.NEW.equals(listing.getStatus())){
             throw new InvalidNFTTransactionException("Invalid listing status.");

@@ -80,10 +80,11 @@ public class ListingService {
                 .filter(cur -> cur.getType().equals(listing.getCurrencyType()))
                 .findFirst().orElseThrow(() -> new CurrencyNotFoundException("Currency not found."));
 
-        // total of all active offers amount
+        // total of all active offers amount with same currency type by excluding users earlier offer to same nft
         List<Offer> offers = offerRepository.findAllByUserIdAndStatus(offer.getUser().getId(), OfferStatus.NEW);
         Double totalOffersAmount = offers.stream()
-                .filter(off -> !off.getNft().getTokenId().equals(offer.getNft().getTokenId()))
+                .filter(off -> !off.getNft().getTokenId().equals(offer.getNft().getTokenId())
+                        && off.getListing().getCurrencyType().equals(offer.getListing().getCurrencyType()))
                 .mapToDouble(off -> off.getAmount().doubleValue()).sum();
 
         if(!ListingStatus.NEW.equals(listing.getStatus())){
