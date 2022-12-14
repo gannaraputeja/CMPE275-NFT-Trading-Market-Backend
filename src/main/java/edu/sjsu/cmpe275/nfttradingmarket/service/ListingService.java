@@ -9,7 +9,19 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Currency;
 import edu.sjsu.cmpe275.nfttradingmarket.exception.*;
+<<<<<<< HEAD
 import edu.sjsu.cmpe275.nfttradingmarket.repository.*;
+=======
+import edu.sjsu.cmpe275.nfttradingmarket.repository.CurrencyRepository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.ListingRepository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.NftRepository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.OfferRepository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.PersonalTransactionRepository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.NftTransactionRepository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRepository;
+import edu.sjsu.cmpe275.nfttradingmarket.repository.WalletRepository;
+
+>>>>>>> db88e6e (Implemented personal transaction logging service)
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -26,21 +38,37 @@ public class ListingService {
     private final ListingRepository listingRepository;
     private final OfferRepository offerRepository;
     private final NftTransactionRepository nftTransactionRepository;
+    private final WalletRepository walletRepository;
+    private final CurrencyRepository currencyRepository;
+    private final PersonalTransactionRepository personalTransactionRepository;
+    private final PersonalTransactionService personalTransactionService;
+
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final NftRepository nftRepository;
     private final CurrencyRepository currencyRepository;
 
+<<<<<<< HEAD
     public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRepository userRepository, ModelMapper modelMapper, NftRepository nftRepository, NftTransactionRepository nftTransactionRepository,
                           CurrencyRepository currencyRepository) {
+=======
+    public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRepository userRepository, ModelMapper modelMapper, NftRepository nftRepository, NftTransactionRepository nftTransactionRepository, WalletRepository _walletRepository, CurrencyRepository _currencyRespository, PersonalTransactionRepository personalTransactionRepository, PersonalTransactionService personalTransactionService) {
+>>>>>>> db88e6e (Implemented personal transaction logging service)
         this.listingRepository = listingRepository;
         this.offerRepository = offerRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.nftRepository = nftRepository;
         this.nftTransactionRepository = nftTransactionRepository;
+<<<<<<< HEAD
         this.currencyRepository = currencyRepository;
+=======
+        this.walletRepository = _walletRepository;
+        this.currencyRepository = _currencyRespository;
+        this.personalTransactionRepository = personalTransactionRepository;
+        this.personalTransactionService = personalTransactionService;
+>>>>>>> db88e6e (Implemented personal transaction logging service)
     }
 
     public ResponseEntity<MessageResponse> createListing(ListingRequestDto listingRequestDto){
