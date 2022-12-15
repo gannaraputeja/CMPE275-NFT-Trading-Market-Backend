@@ -97,10 +97,14 @@ public class WalletService {
     public ResponseEntity<MessageResponse> buyNft(BuyNftDto buyNftDto) throws UserNotFoundException, ListingNotFoundException
         , NftNotFoundException, InvalidNFTTransactionException, InsufficientCurrencyException {
         User user = userRepository.findById(buyNftDto.getUserId()).orElseThrow(() -> new UserNotFoundException("User does not exist."));
-        Currency currency = user.getWallet().getCurrencyList().stream()
+        Currency buyerCurrency = user.getWallet().getCurrencyList().stream()
                 .filter( cur -> cur.getType().equals(buyNftDto.getCurrencyType()))
-                .findFirst().orElseThrow(() -> new CurrencyNotFoundException("Currency not found."));
+                .findFirst().orElseThrow(() -> new CurrencyNotFoundException("Buyer currency not found."));
         Listing listing = listingRepository.findById(buyNftDto.getListingId()).orElseThrow(() -> new ListingNotFoundException("Listing not found."));
+        User seller = listing.getUser();
+        Currency sellerCurrency = seller.getWallet().getCurrencyList().stream()
+                .filter(cur -> cur.getType().equals(buyNftDto.getCurrencyType()))
+                .findFirst().orElseThrow(() -> new CurrencyNotFoundException("Seller currency not found."));
         Nft nft = nftRepository.findById(buyNftDto.getNftTokenId()).orElseThrow(() -> new NftNotFoundException("NFT not found."));
 
         // total of all active offers amount with same currency type
@@ -111,8 +115,8 @@ public class WalletService {
 
         if(!ListingStatus.NEW.equals(listing.getStatus())){
             throw new InvalidNFTTransactionException("Invalid listing status.");
-        } else if(listing.getAmount() > currency.getAmount() ||
-                listing.getAmount() > (currency.getAmount() - totalOffersAmount)) {
+        } else if(listing.getAmount() > buyerCurrency.getAmount() ||
+                listing.getAmount() > (buyerCurrency.getAmount() - totalOffersAmount)) {
             throw new InsufficientCurrencyException("User has insufficient currency.");
         }
         NftTransaction nftTransaction = new NftTransaction();
@@ -124,9 +128,11 @@ public class WalletService {
         nftTransaction.setListingType(listing.getSellType());
         nftTransaction.setCreatedOn(new Date());
         nftTransactionRepository.save(nftTransaction);
-        // deduct currency amount
-        currency.setAmount(currency.getAmount() - listing.getAmount());
-        currencyRepository.save(currency);
+        // deduct currency amount for buyer
+        buyerCurrency.setAmount(buyerCurrency.getAmount() - listing.getAmount());
+        currencyRepository.save(buyerCurrency);
+        // add currency amount to seller
+        sellerCurrency.setAmount(sellerCurrency.getAmount() + listing.getAmount());
         listing.setStatus(ListingStatus.SOLD);
         listingRepository.save(listing);
         nft.setSmartContractAddress(UUID.randomUUID());

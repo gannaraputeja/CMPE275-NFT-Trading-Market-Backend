@@ -323,9 +323,13 @@ public class ListingService {
         Nft currentNft = updateOffer.getNft();
         User seller = currentNft.getOwner();
 
-        Currency currency = buyer.getWallet().getCurrencyList().stream().
-                filter(cur->cur.getType().equals(updateOffer.getListing().getCurrencyType()))
-                .findFirst().orElseThrow(() -> new CurrencyNotFoundException("No currency found"));
+        Currency buyerCurrency = buyer.getWallet().getCurrencyList().stream()
+                .filter(cur->cur.getType().equals(updateOffer.getListing().getCurrencyType()))
+                .findFirst().orElseThrow(() -> new CurrencyNotFoundException("Buyer currency not found"));
+
+        Currency sellerCurrency = seller.getWallet().getCurrencyList().stream()
+                .filter(cur -> cur.getType().equals(updateOffer.getListing().getCurrencyType()))
+                .findFirst().orElseThrow(() -> new CurrencyNotFoundException("Seller currency not found."));
 
         // total of all active offers amount with same currency type
         List<Offer> offers = offerRepository.findAllByUserIdAndStatus(buyer.getId(), OfferStatus.NEW);
@@ -333,12 +337,14 @@ public class ListingService {
                 .filter(offer -> offer.getListing().getCurrencyType().equals(updateOffer.getListing().getCurrencyType()))
                 .mapToDouble(offer -> offer.getAmount().doubleValue()).sum();
 
-        if(currency.getAmount() < totalOffersAmount){
+        if(buyerCurrency.getAmount() < totalOffersAmount){
             throw new InsufficientCurrencyException("Insufficient balance for buyer");
         }
-        //deducting amount for offer made to buy NFT at auction
-        currency.setAmount(currency.getAmount()-updateOffer.getAmount());
-        currencyRepository.save(currency);
+        //deducting amount for offer made for buyer
+        buyerCurrency.setAmount(buyerCurrency.getAmount() - updateOffer.getAmount());
+        currencyRepository.save(buyerCurrency);
+        //adding amount to seller wallet.
+        sellerCurrency.setAmount(sellerCurrency.getAmount() + updateOffer.getAmount());
 
         //Created NFT transaction from seller to buyer
         NftTransaction nftTransaction = new NftTransaction();
