@@ -16,7 +16,7 @@ import javax.validation.constraints.NotBlank;
  */
 
 public interface PersonalTransactionRepository extends JpaRepository<PersonalTransaction, UUID> {
-    @Query(value = "SELECT * from personal_transaction where user_id = ?1 and currency_type in ?2 and created_on >= ?3 and created_on <= ?4", nativeQuery = true)
+    @Query(value = "SELECT * from personal_transaction where user_id = ?1 and currency_type in ?2 and created_on >= ?3 and created_on <= ?4 ORDER BY created_on DESC", nativeQuery = true)
     public List<PersonalTransaction> getAllPersonalTransactions(String userId, List<String> currencyType, Date pastDate, Date currDate);
  
     // @Query(value = "SELECT * from personal_transaction where user_id = ?1", nativeQuery = true)
