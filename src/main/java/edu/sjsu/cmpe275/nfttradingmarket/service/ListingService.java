@@ -341,8 +341,9 @@ public class ListingService {
         nftTransaction.setCurrencyType(updateOffer.getListing().getCurrencyType());
         nftTransaction.setListingType(updateOffer.getListing().getSellType());
         nftTransaction.setNft(currentNft);
+        nftTransaction.setPrice(updateOffer.getAmount());
         nftTransaction.setCreatedOn(new Date());
-        NftTransaction nftT = nftTransactionRepository.save(nftTransaction);
+        nftTransactionRepository.save(nftTransaction);
 
         //update NFT
         currentNft.setOwner(buyer);
@@ -360,9 +361,11 @@ public class ListingService {
         offerRepository.save(updateOffer);
 
         //Update all other offers of listing with status NEW to rejected
-        offerRepository.findAllByListingIdAndStatus(updateOffer.getListing().getId(), OfferStatus.NEW)
-                .stream().filter(offer-> !offer.getUser().getId().equals(buyer.getId()))
-                .forEach(offer->{
+        List<Offer> offersToBeRejected = offerRepository.findAllByListingIdAndStatus(updateOffer.getListing().getId(), OfferStatus.NEW);
+
+        offersToBeRejected = offersToBeRejected.stream().filter(offer-> !offer.getUser().getId().equals(buyer.getId())).collect(Collectors.toList());
+
+        offersToBeRejected.forEach(offer->{
                     offer.setStatus(OfferStatus.REJECTED);
                     offerRepository.save(offer);
                 });
