@@ -14,7 +14,7 @@ public class MakeOfferDto {
     private UUID id;
     private Double amount;
     private UUID nftTokenId;
-    private UUID userId;
+    // private UUID userId;
     private UserDTO user;
     private UUID listingId;
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "America/Los_Angeles")
