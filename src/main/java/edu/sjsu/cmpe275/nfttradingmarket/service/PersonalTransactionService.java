@@ -143,7 +143,7 @@ public class PersonalTransactionService {
         personalTransactionRepository.save(personalTransaction);
     }
 
-    public List<PersonalTransactionDto> getAllPersonalTransactions(String userId, @NotBlank Integer period, List<String> currencyType) {
+    public List<PersonalTransactionDto> getAllPersonalTransactions(String userId, String period, List<String> currencyType) {
         Date currDate = new Date();
         Calendar c = Calendar.getInstance();
         c.setTime(currDate);
@@ -152,12 +152,15 @@ public class PersonalTransactionService {
             currencyType.add("BTC");
             currencyType.add("ETH");
         }
-        if (period == 1) {
+        if (period.isEmpty()) {
+            period = "1";
+        } 
+        if (period == "1") {
             c.add(Calendar.HOUR, -24);
-        } else if (period == 2) {
-            c.add(Calendar.MONTH, -1);
-        } else {
+        } else if (period == "2") {
             c.add(Calendar.DATE, -7);
+        } else {
+            c.add(Calendar.MONTH, -1);
         }
         Date pastDate = c.getTime();
 

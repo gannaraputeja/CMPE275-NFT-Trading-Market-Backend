@@ -36,8 +36,8 @@ public class PersonalTransactionsController {
     }
 
     @GetMapping(path="/personal/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PersonalTransactionDto> getPersonalTransactions(@PathVariable("userId") String userId,@RequestParam Integer period, @RequestParam List<String> currencyType) {
+    public List<PersonalTransactionDto> getPersonalTransactions(@PathVariable("userId") String userId, @RequestParam String period, @RequestParam List<String> currencyType) {
         return personalTransactionService.getAllPersonalTransactions(userId, period, currencyType);
-        
+
     }
 }
