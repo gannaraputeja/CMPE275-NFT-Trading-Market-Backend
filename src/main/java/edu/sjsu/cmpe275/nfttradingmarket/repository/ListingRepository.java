@@ -39,7 +39,7 @@ Optional<Listing> findById(UUID id);
    @Query(value = "SELECT count(*) from offer where status='NEW'", nativeQuery = true)
    public long getTotalActiveOffers();
    
-   @Query(value = "SELECT count(*) from listing as lis left join offer as off on lis.nft_token_id = off.nft_token_id where lis.status='NEW'", nativeQuery = true)
+   @Query(value = "SELECT count(*) from listing as lis left join offer as off on lis.nft_token_id = off.nft_token_id where lis.status='NEW' and lis.sell_type='AUCTION'", nativeQuery = true)
    public long getActiveNFTSListedWithOffers();
 
    //System Transaction Stats
