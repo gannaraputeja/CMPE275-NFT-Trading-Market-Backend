@@ -3,10 +3,11 @@ package edu.sjsu.cmpe275.nfttradingmarket.dto.request;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
-@Data @NoArgsConstructor
+@Data
 public class UserDetailsUpdateDTO {
 
     private UUID id;
@@ -14,6 +15,7 @@ public class UserDetailsUpdateDTO {
     private String firstname;
     private String lastname;
     private String nickname;
+    @NotBlank
     @Size(min = 8, max = 40)
     private String password;
 }

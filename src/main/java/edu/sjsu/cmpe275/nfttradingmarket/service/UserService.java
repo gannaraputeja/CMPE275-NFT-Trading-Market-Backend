@@ -28,6 +28,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
@@ -268,7 +269,7 @@ public class UserService implements UserDetailsService {
         return ResponseEntity.ok().body(new MessageResponse("Nickname updated successfully."));
     }
 
-    public ResponseEntity<MessageResponse> updatePassword(UserDetailsUpdateDTO userDetailsUpdateDTO) {
+    public ResponseEntity<MessageResponse> updatePassword(@Valid UserDetailsUpdateDTO userDetailsUpdateDTO) {
         User user = userRepository.findById(userDetailsUpdateDTO.getId()).orElseThrow(() -> new UserNotFoundException("User not found."));
         if(userDetailsUpdateDTO.getPassword() == null || "".equals(userDetailsUpdateDTO.getPassword()) || "".equals(userDetailsUpdateDTO.getPassword().trim()))
             return ResponseEntity.badRequest().body(new MessageResponse("Password cannot be empty."));
