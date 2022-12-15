@@ -35,7 +35,6 @@ public class ListingService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final NftRepository nftRepository;
-    private final CurrencyRepository currencyRepository;
 
     public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRepository userRepository, ModelMapper modelMapper, NftRepository nftRepository, NftTransactionRepository nftTransactionRepository, WalletRepository _walletRepository, CurrencyRepository _currencyRespository, PersonalTransactionRepository personalTransactionRepository, PersonalTransactionService personalTransactionService) {
         this.listingRepository = listingRepository;
