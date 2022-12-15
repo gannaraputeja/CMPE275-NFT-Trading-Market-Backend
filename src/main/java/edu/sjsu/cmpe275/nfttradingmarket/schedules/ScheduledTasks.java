@@ -26,7 +26,7 @@ public class ScheduledTasks {
 	@Scheduled(fixedRate = 36000)
 	public void reportCurrentTime() {
 		List<Offer> offers = offerRepository.findAllByStatus(OfferStatus.NEW);
-		offers.stream().filter(offer -> offer.getExpirationTime().before(new Date()))
+		offers.stream().filter(offer -> offer.getExpirationTime() != null && offer.getExpirationTime().before(new Date()))
 				.forEach(offer -> {
 					offer.setStatus(OfferStatus.CANCELLED);
 					offerRepository.save(offer);
