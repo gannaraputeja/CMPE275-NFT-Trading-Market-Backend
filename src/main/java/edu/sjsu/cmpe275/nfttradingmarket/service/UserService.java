@@ -2,8 +2,8 @@ package edu.sjsu.cmpe275.nfttradingmarket.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import edu.sjsu.cmpe275.nfttradingmarket.dto.UserDTO;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.SignUpRequestDTO;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.request.UserDetailsUpdateDTO;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.response.JWTResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.LoginRequestDTO;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
@@ -151,7 +151,7 @@ public class UserService implements UserDetailsService {
 
         JWTResponse jwtResponse = new JWTResponse(jwt, userPrincipal.getId(), userPrincipal.getUsername(),
                 userPrincipal.getUser().getFirstname().concat(" ").concat(userPrincipal.getUser().getLastname()),
-                roles, userPrincipal.isEnabled());
+                userPrincipal.getUser().getNickname(), roles, userPrincipal.isEnabled());
         return ResponseEntity.ok(jwtResponse);
     }
 
@@ -220,7 +220,7 @@ public class UserService implements UserDetailsService {
 
                 JWTResponse jwtResponse = new JWTResponse(jwt, userPrincipal.getId(), userPrincipal.getUsername(),
                         userPrincipal.getUser().getFirstname().concat(" ").concat(userPrincipal.getUser().getLastname()),
-                        roles, userPrincipal.isEnabled());
+                        userPrincipal.getUser().getNickname(), roles, userPrincipal.isEnabled());
                 return ResponseEntity.ok(jwtResponse);
             }
 
@@ -256,11 +256,29 @@ public class UserService implements UserDetailsService {
         return new MyUserPrincipal(newUser);
     }
 
-    public ResponseEntity<MessageResponse> updateNickname(UserDTO userDTO) {
-        User user = userRepository.findById(userDTO.getId()).orElseThrow(() -> new UserNotFoundException("User not found."));
-        user.setNickname(userDTO.getNickname());
+    public ResponseEntity<MessageResponse> updateNickname(UserDetailsUpdateDTO userDetailsUpdateDTO) {
+        User user = userRepository.findById(userDetailsUpdateDTO.getId()).orElseThrow(() -> new UserNotFoundException("User not found."));
+        if(userRepository.existsByNickname(userDetailsUpdateDTO.getNickname())){
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Nickname is already in taken!"));
+        }
+        user.setNickname(userDetailsUpdateDTO.getNickname());
         userRepository.save(user);
         return ResponseEntity.ok().body(new MessageResponse("Nickname updated successfully."));
+    }
+
+    public ResponseEntity<MessageResponse> updatePassword(UserDetailsUpdateDTO userDetailsUpdateDTO) {
+        User user = userRepository.findById(userDetailsUpdateDTO.getId()).orElseThrow(() -> new UserNotFoundException("User not found."));
+        if(userDetailsUpdateDTO.getPassword() == null || "".equals(userDetailsUpdateDTO.getPassword()) || "".equals(userDetailsUpdateDTO.getPassword().trim()))
+            return ResponseEntity.badRequest().body(new MessageResponse("Password cannot be empty."));
+
+        if(bCryptPasswordEncoder.matches(userDetailsUpdateDTO.getPassword(), user.getPassword()))
+            return ResponseEntity.badRequest().body(new MessageResponse("Password cannot be same as previous."));
+
+        user.setPassword(bCryptPasswordEncoder.encode(userDetailsUpdateDTO.getPassword()));
+        userRepository.save(user);
+        return ResponseEntity.ok().body(new MessageResponse("Password updated successfully."));
     }
 
 }

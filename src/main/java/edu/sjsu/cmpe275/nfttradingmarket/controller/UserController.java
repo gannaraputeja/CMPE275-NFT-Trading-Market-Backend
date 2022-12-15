@@ -1,6 +1,6 @@
 package edu.sjsu.cmpe275.nfttradingmarket.controller;
 
-import edu.sjsu.cmpe275.nfttradingmarket.dto.UserDTO;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.request.UserDetailsUpdateDTO;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +18,13 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(path = "/updateNickname")
-    public ResponseEntity<MessageResponse> updateNickname(@RequestBody UserDTO userDTO) {
-        return userService.updateNickname(userDTO);
+    public ResponseEntity<MessageResponse> updateNickname(@RequestBody UserDetailsUpdateDTO userDetailsUpdateDTO) {
+        return userService.updateNickname(userDetailsUpdateDTO);
+    }
+
+    @PostMapping(path = "/updatePassword")
+    public ResponseEntity<MessageResponse> updatePassword(@RequestBody UserDetailsUpdateDTO userDetailsUpdateDTO) {
+        return userService.updatePassword(userDetailsUpdateDTO);
     }
 
 }
