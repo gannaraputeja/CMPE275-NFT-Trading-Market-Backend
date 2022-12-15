@@ -26,21 +26,27 @@ public class ListingService {
     private final ListingRepository listingRepository;
     private final OfferRepository offerRepository;
     private final NftTransactionRepository nftTransactionRepository;
+    private final WalletRepository walletRepository;
+    private final CurrencyRepository currencyRepository;
+    private final PersonalTransactionRepository personalTransactionRepository;
+    private final PersonalTransactionService personalTransactionService;
+
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final NftRepository nftRepository;
-    private final CurrencyRepository currencyRepository;
 
-    public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRepository userRepository, ModelMapper modelMapper, NftRepository nftRepository, NftTransactionRepository nftTransactionRepository,
-                          CurrencyRepository currencyRepository) {
+    public ListingService(ListingRepository listingRepository, OfferRepository offerRepository, UserRepository userRepository, ModelMapper modelMapper, NftRepository nftRepository, NftTransactionRepository nftTransactionRepository, WalletRepository _walletRepository, CurrencyRepository _currencyRespository, PersonalTransactionRepository personalTransactionRepository, PersonalTransactionService personalTransactionService) {
         this.listingRepository = listingRepository;
         this.offerRepository = offerRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.nftRepository = nftRepository;
         this.nftTransactionRepository = nftTransactionRepository;
-        this.currencyRepository = currencyRepository;
+        this.walletRepository = _walletRepository;
+        this.currencyRepository = _currencyRespository;
+        this.personalTransactionRepository = personalTransactionRepository;
+        this.personalTransactionService = personalTransactionService;
     }
 
     public ResponseEntity<MessageResponse> createListing(ListingRequestDto listingRequestDto){

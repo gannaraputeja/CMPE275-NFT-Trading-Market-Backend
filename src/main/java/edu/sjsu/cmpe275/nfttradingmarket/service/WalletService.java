@@ -29,11 +29,12 @@ public class WalletService {
     private final ListingRepository listingRepository;
     private final NftTransactionRepository nftTransactionRepository;
     private final OfferRepository offerRepository;
+    private final PersonalTransactionService personalTransactionService;
 
     public WalletService(NftRepository nftRepository, WalletRepository walletRepository, ModelMapper modelMapper,
                          CurrencyRepository currencyRepository, UserRepository userRepository,
                          ListingRepository listingRepository, NftTransactionRepository nftTransactionRepository,
-                         OfferRepository offerRepository) {
+                         OfferRepository offerRepository, PersonalTransactionService personalTransactionService) {
         this.nftRepository = nftRepository;
         this.walletRepository = walletRepository;
         this.modelMapper = modelMapper;
@@ -42,6 +43,7 @@ public class WalletService {
         this.listingRepository = listingRepository;
         this.nftTransactionRepository = nftTransactionRepository;
         this.offerRepository = offerRepository;
+        this.personalTransactionService = personalTransactionService;
     }
 
     public ResponseEntity<MessageResponse> createNFT(Nft nft){
@@ -131,6 +133,7 @@ public class WalletService {
         nft.setOwner(user);
         nft.setLastRecordedTime(new Date());
         nftRepository.save(nft);
+        personalTransactionService.createBuyNFTTransaction(user, listing);
         return ResponseEntity.ok(new MessageResponse("Transaction successful."));
     }
 
