@@ -46,7 +46,7 @@ public class AuthController {
         return userService.oAuthLogin(googleIdToken);
     }
 
-    @PostMapping(path = "/validate/email", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/validate/email", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> confirmEmail(@NotBlank @RequestParam String token) {
         return userService.confirmEmail(token);
     }

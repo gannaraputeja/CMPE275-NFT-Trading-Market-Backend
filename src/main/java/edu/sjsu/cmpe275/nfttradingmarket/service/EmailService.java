@@ -30,6 +30,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Async
     public void send(String username, String firstname, String token) {
         try {
 
