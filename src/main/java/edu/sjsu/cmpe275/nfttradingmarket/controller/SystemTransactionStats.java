@@ -16,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,16 +34,36 @@ public class SystemTransactionStats {
     }
 
     @GetMapping(path="/stats", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SystemTransactionStatsDto> getSystemTransactionStats() {
+    public ResponseEntity<SystemTransactionStatsDto> getSystemTransactionStats(@RequestParam String period, @RequestParam List<String> currencyType) {
 
-        long totalDeposits              = listingRepository.getTotalDepositsCount();
-        long totalDepositCurrencyAmount = listingRepository.getTotalDepositCurrencyAmount();
-        long totalWithDrawals           = listingRepository.getTotalWithdrawalsCount();
-        long totalWithDrawalCurrencyAmount = listingRepository.getTotalDepositCurrencyAmount();
+        Date currDate = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(currDate);
+
+        if(currencyType.isEmpty()) {
+            currencyType.add("BTC");
+            currencyType.add("ETH");
+        }
+        if (period.isEmpty()) {
+            period = "1";
+        } 
+        if (period == "1") {
+            c.add(Calendar.HOUR, -24);
+        } else if (period == "2") {
+            c.add(Calendar.DATE, -7);
+        } else {
+            c.add(Calendar.MONTH, -1);
+        }
+        Date pastDate = c.getTime();
+        
+        long totalDeposits              = listingRepository.getTotalDepositsCount(pastDate, currDate, currencyType);
+        long totalDepositCurrencyAmount = listingRepository.getTotalDepositCurrencyAmount(pastDate, currDate, currencyType);
+        long totalWithDrawals           = listingRepository.getTotalWithdrawalsCount(pastDate, currDate, currencyType);
+        long totalWithDrawalCurrencyAmount = listingRepository.getTotalWithdrawCurrencyAmount(pastDate, currDate, currencyType);
         long initialSystemBalance = 2000;
-        long currentSystemBalance = listingRepository.getCurrentSystemBalance();
-        long totalNFTSales = listingRepository.getTotalNFTSales();
-        long totalNFTSalesCurrencyAmount = listingRepository.getTotalNFTSalesCurrencyAmount();
+        long currentSystemBalance = listingRepository.getCurrentSystemBalance(pastDate, currDate, currencyType);
+        long totalNFTSales = listingRepository.getTotalNFTSales(pastDate, currDate, currencyType);
+        long totalNFTSalesCurrencyAmount = listingRepository.getTotalNFTSalesCurrencyAmount(pastDate, currDate, currencyType);
         
         SystemTransactionStatsDto systemTransactionStatsDto = new SystemTransactionStatsDto();
         
