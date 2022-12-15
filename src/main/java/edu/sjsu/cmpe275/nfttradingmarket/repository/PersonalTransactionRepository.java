@@ -3,6 +3,8 @@ package edu.sjsu.cmpe275.nfttradingmarket.repository;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.PersonalTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.*;
+
 import java.util.UUID;
 
 /**
@@ -11,5 +13,6 @@ import java.util.UUID;
  */
 
 public interface PersonalTransactionRepository extends JpaRepository<PersonalTransaction, UUID> {
-    
+    List<PersonalTransaction> findAllByUserId(UUID userId);
+
 }

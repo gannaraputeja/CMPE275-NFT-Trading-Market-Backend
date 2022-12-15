@@ -3,6 +3,7 @@ package edu.sjsu.cmpe275.nfttradingmarket.service;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.CurrencyDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.ListingDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.PersonalTransactionDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.BuyNftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
@@ -120,10 +121,9 @@ public class PersonalTransactionService {
         personalTransactionRepository.save(personalTransaction1);
     }
 
-    public void createCurrencyTransaction(CurrencyTransaction currencyTransaction) {
+    public void createCurrencyTransaction(CurrencyTransaction currencyTransaction, Currency currency) {
         //PURCHASE LOG
         User user = currencyTransaction.getUser();
-        Currency currency = currencyRepository.findByWalletIdAndType(currencyTransaction.getUser().getWallet().getId() , currencyTransaction.getCurrencyType());
         PersonalTransaction personalTransaction = new PersonalTransaction();
         personalTransaction.setCreatedOn(new Date());
         
@@ -141,6 +141,29 @@ public class PersonalTransactionService {
         personalTransactionRepository.save(personalTransaction);
 
         
+    }
+
+    public List<PersonalTransactionDto> getAllPersonalTransactions(UUID UserId) {
+        List<PersonalTransaction> personalTransactions = personalTransactionRepository.findAllByUserId(UserId);
+
+
+        ModelMapper mapper = new ModelMapper();
+        mapper.addMappings(new PropertyMap<Listing, PersonalTransactionDto>() {
+            @Override
+            protected void configure() {
+                // Tells ModelMapper to skip backreference Listing
+                skip().setUser(null);
+                skip().setPreviousUser(null);
+                // skip().setNft(null);
+            }
+        });
+
+        List<PersonalTransactionDto> personalTransactionDtoList = personalTransactions
+                .stream()
+                .map(pt -> mapper.map(pt, PersonalTransactionDto.class))
+                .collect(Collectors.toList());
+
+        return personalTransactionDtoList;
     }
 
 

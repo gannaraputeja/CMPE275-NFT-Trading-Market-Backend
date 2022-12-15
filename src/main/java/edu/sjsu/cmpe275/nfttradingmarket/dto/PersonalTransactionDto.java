@@ -20,7 +20,7 @@ public class PersonalTransactionDto {
     private Nft nft;
     private CurrencyType currencyType;
     private Double amount;
-    private Double remainingBalance;
+    private Double availableAmount;
     private UserDTO user;
     private UserDTO previousUser;
 }

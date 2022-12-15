@@ -46,7 +46,7 @@ public class CurrencyTransactionService {
         currencyTransaction.setAvailableAmount(currency.getAmount());
         currencyRepository.save(currency);
         currencyRepository.save(currency);
-        personalTransactionService.createCurrencyTransaction(currencyTransaction);
+        personalTransactionService.createCurrencyTransaction(currencyTransaction, currency);
         return currencyTransactionRepository.save(currencyTransaction);
     }
 }

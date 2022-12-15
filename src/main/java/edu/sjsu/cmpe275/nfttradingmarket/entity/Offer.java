@@ -31,6 +31,8 @@ public class Offer {
     private Listing listing;
     @Column(precision=10, scale = 2)
     private Double amount;
+    @Column(precision=10, scale = 2)
+    private Double availableAmount;
     private Date createdOn;
     private Date expirationTime;
     @Enumerated(EnumType.STRING)
