@@ -59,7 +59,7 @@ public class SystemTransactionStats {
         long totalDeposits              = listingRepository.getTotalDepositsCount(pastDate, currDate, currencyType);
         long totalDepositCurrencyAmount = listingRepository.getTotalDepositCurrencyAmount(pastDate, currDate, currencyType);
         long totalWithDrawals           = listingRepository.getTotalWithdrawalsCount(pastDate, currDate, currencyType);
-        long totalWithDrawalCurrencyAmount = listingRepository.getTotalDepositCurrencyAmount(pastDate, currDate, currencyType);
+        long totalWithDrawalCurrencyAmount = listingRepository.getTotalWithdrawCurrencyAmount(pastDate, currDate, currencyType);
         long initialSystemBalance = 2000;
         long currentSystemBalance = listingRepository.getCurrentSystemBalance(pastDate, currDate, currencyType);
         long totalNFTSales = listingRepository.getTotalNFTSales(pastDate, currDate, currencyType);

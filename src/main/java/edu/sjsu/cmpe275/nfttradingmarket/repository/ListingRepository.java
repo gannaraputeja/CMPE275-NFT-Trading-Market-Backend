@@ -50,20 +50,20 @@ Optional<Listing> findById(UUID id);
    @Query(value = "SELECT count(*) from currency_transaction where type='WITHDRAW' and created_on >= ?1 and created_on <= ?2 and currency_type in ?3", nativeQuery = true)
    public long getTotalWithdrawalsCount(Date pastDate, Date currDate, List<String> currencyType);
 
-   @Query(value = "SELECT sum(amount) from currency_transaction where type='DEPOSIT' and created_on >= ?1 and created_on <= ?2 and currency_type in ?3", nativeQuery = true)
+   @Query(value = "SELECT COALESCE(sum(amount), 0) from currency_transaction where type='DEPOSIT' and created_on >= ?1 and created_on <= ?2 and currency_type in ?3", nativeQuery = true)
    public long getTotalDepositCurrencyAmount(Date pastDate, Date currDate, List<String> currencyType);
 
-   @Query(value = "SELECT sum(amount) from currency_transaction where type='WITHDRAW' and created_on >= ?1 and created_on <= ?2 and currency_type in ?3", nativeQuery = true)
-   public long getTotalWithdrawCurrencyAmount();
+   @Query(value = "SELECT COALESCE(sum(amount), 0) from currency_transaction where type='WITHDRAW' and created_on >= ?1 and created_on <= ?2 and currency_type in ?3", nativeQuery = true)
+   public long getTotalWithdrawCurrencyAmount(Date pastDate, Date currDate, List<String> currencyType);
 
    @Query(value = "SELECT count(*) from nft_transaction where created_on >= ?1 and created_on <= ?2 and currency_type in ?3", nativeQuery = true)
    public long getTotalNFTSales(Date pastDate, Date currDate, List<String> currencyType);
 
-   @Query(value = "SELECT sum(amount) from currency", nativeQuery = true)
+   @Query(value = "SELECT COALESCE(sum(amount), 0) from currency", nativeQuery = true)
    public long getCurrentSystemBalance(Date pastDate, Date currDate, List<String> currencyType);
 
 
-   @Query(value = "SELECT sum(price) from nft_transaction where created_on >= ?1 and created_on <= ?2 and currency_type in ?3", nativeQuery = true)
+   @Query(value = "SELECT COALESCE(sum(price), 0) from nft_transaction where created_on >= ?1 and created_on <= ?2 and currency_type in ?3", nativeQuery = true)
    public long getTotalNFTSalesCurrencyAmount(Date pastDate, Date currDate, List<String> currencyType);
 
 
