@@ -5,11 +5,13 @@ import edu.sjsu.cmpe275.nfttradingmarket.dto.NftDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.PersonalTransactionDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.WalletDto;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.CreateNftDto;
+import edu.sjsu.cmpe275.nfttradingmarket.entity.CurrencyType;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Nft;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.PersonalTransaction;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Wallet;
 import edu.sjsu.cmpe275.nfttradingmarket.service.PersonalTransactionService;
 import edu.sjsu.cmpe275.nfttradingmarket.service.WalletService;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +36,8 @@ public class PersonalTransactionsController {
     }
 
     @GetMapping(path="/personal/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PersonalTransactionDto> getPersonalTransactions(@PathVariable("userId") UUID userId, @NotBlank @RequestParam Integer Period, @NotBlank @RequestParam String CurrencyType) {
-        return personalTransactionService.getAllPersonalTransactions(userId);
+    public List<PersonalTransactionDto> getPersonalTransactions(@PathVariable("userId") String userId,@RequestParam Integer period, @RequestParam List<String> currencyType) {
+        return personalTransactionService.getAllPersonalTransactions(userId, period, currencyType);
+        
     }
 }

@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotBlank;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,7 +80,7 @@ public class PersonalTransactionService {
         personalTransaction1.setUser(seller);
         personalTransaction1.setPreviousUser(buyer);
         personalTransactionRepository.save(personalTransaction1);
-        
+
         //NFT Transaction Repository - DEPRECATED
         NftTransaction nftTransaction = new NftTransaction();
         nftTransaction.setBuyer(buyer);
@@ -139,14 +141,28 @@ public class PersonalTransactionService {
         personalTransaction.setUser(user);
         // personalTransaction.setPreviousUser(seller);
         personalTransactionRepository.save(personalTransaction);
-
-        
     }
 
-    public List<PersonalTransactionDto> getAllPersonalTransactions(UUID UserId) {
-        List<PersonalTransaction> personalTransactions = personalTransactionRepository.findAllByUserId(UserId);
+    public List<PersonalTransactionDto> getAllPersonalTransactions(String userId, @NotBlank Integer period, List<String> currencyType) {
+        Date currDate = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(currDate);
 
+        if(currencyType.isEmpty()) {
+            currencyType.add("BTC");
+            currencyType.add("ETH");
+        }
+        if (period == 1) {
+            c.add(Calendar.HOUR, -24);
+        } else if (period == 2) {
+            c.add(Calendar.MONTH, -1);
+        } else {
+            c.add(Calendar.DATE, -7);
+        }
+        Date pastDate = c.getTime();
 
+        List<PersonalTransaction> personalTransactions = personalTransactionRepository.getAllPersonalTransactions(userId, currencyType, pastDate, currDate);//(UserId, currencyType, new Date(), new Date());
+        
         ModelMapper mapper = new ModelMapper();
         mapper.addMappings(new PropertyMap<Listing, PersonalTransactionDto>() {
             @Override
@@ -165,6 +181,4 @@ public class PersonalTransactionService {
 
         return personalTransactionDtoList;
     }
-
-
 }
