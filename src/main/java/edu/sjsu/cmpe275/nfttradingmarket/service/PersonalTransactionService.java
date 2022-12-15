@@ -171,9 +171,9 @@ public class PersonalTransactionService {
             @Override
             protected void configure() {
                 // Tells ModelMapper to skip backreference Listing
+                skip().setNft(null);
                 skip().setUser(null);
                 skip().setPreviousUser(null);
-                // skip().setNft(null);
             }
         });
 
