@@ -16,26 +16,25 @@ import java.util.UUID;
 
 @Data @NoArgsConstructor
 @Entity
-public class Offer {
+public class PersonalTransaction {
 
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID id;
-    @ManyToOne
-    private User user;
+    private Date createdOn;
+    @Enumerated(EnumType.STRING)
+    private ActionType actionType;
     @ManyToOne
     private Nft nft;
-    @ManyToOne
-    private Listing listing;
-    @Column(precision=10, scale = 2)
-    private Double amount;
-    @Column(precision=10, scale = 2)
-    private Double availableAmount;
-    private Date createdOn;
-    private Date expirationTime;
     @Enumerated(EnumType.STRING)
-    private OfferStatus status;
+    private CurrencyType currencyType;
+    private Double amount;
+    private Double availableAmount;
+    @OneToOne
+    private User user;
+    @OneToOne
+    private User previousUser;
 
 }

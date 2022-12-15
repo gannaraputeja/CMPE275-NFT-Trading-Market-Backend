@@ -19,13 +19,15 @@ public class CurrencyTransactionService {
     private final CurrencyTransactionRepository currencyTransactionRepository;
     private final CurrencyRepository currencyRepository;
     private final UserRepository userRepository;
+    private final PersonalTransactionService personalTransactionService;
 
     public CurrencyTransactionService(CurrencyTransactionRepository currencyTransactionRepository,
                                       CurrencyRepository currencyRepository,
-                                      UserRepository userRepository) {
+                                      UserRepository userRepository, PersonalTransactionService personalTransactionService) {
         this.currencyTransactionRepository = currencyTransactionRepository;
         this.currencyRepository = currencyRepository;
         this.userRepository = userRepository;
+        this.personalTransactionService = personalTransactionService;
     }
 
     public CurrencyTransaction createCurrencyTransaction(CurrencyTransaction currencyTransaction){
@@ -41,9 +43,10 @@ public class CurrencyTransactionService {
         if(currencyTransaction.getType() == CurrencyTransactionType.DEPOSIT)
             currency.setAmount(currency.getAmount() + currencyTransaction.getAmount());
 
+        currencyTransaction.setAvailableAmount(currency.getAmount());
         currencyRepository.save(currency);
         currencyRepository.save(currency);
-
+        personalTransactionService.createCurrencyTransaction(currencyTransaction, currency);
         return currencyTransactionRepository.save(currencyTransaction);
     }
 }
