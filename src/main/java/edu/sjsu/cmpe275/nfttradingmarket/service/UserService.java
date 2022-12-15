@@ -2,12 +2,14 @@ package edu.sjsu.cmpe275.nfttradingmarket.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import edu.sjsu.cmpe275.nfttradingmarket.dto.UserDTO;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.SignUpRequestDTO;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.response.JWTResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.request.LoginRequestDTO;
 import edu.sjsu.cmpe275.nfttradingmarket.dto.response.MessageResponse;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.*;
 import edu.sjsu.cmpe275.nfttradingmarket.entity.Currency;
+import edu.sjsu.cmpe275.nfttradingmarket.exception.UserNotFoundException;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.ConfirmationTokenRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.repository.UserRepository;
 import edu.sjsu.cmpe275.nfttradingmarket.security.MyUserPrincipal;
@@ -252,6 +254,13 @@ public class UserService implements UserDetailsService {
         emailService.send(newUser.getUsername(), newUser.getFirstname(), uuidToken.toString());
 
         return new MyUserPrincipal(newUser);
+    }
+
+    public ResponseEntity<MessageResponse> updateNickname(UserDTO userDTO) {
+        User user = userRepository.findById(userDTO.getId()).orElseThrow(() -> new UserNotFoundException("User not found."));
+        user.setNickname(userDTO.getNickname());
+        userRepository.save(user);
+        return ResponseEntity.ok().body(new MessageResponse("Nickname updated successfully."));
     }
 
 }
