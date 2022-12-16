@@ -45,9 +45,14 @@ public class DashboardController {
 
         dashboardMetricsdto.setTotalAllActiveOffers(totalActiveOffers);
 
-        long activeNFTSListedWithOffers = listingRepository.getActiveNFTSListedWithOffers();
-        dashboardMetricsdto.setActiveNFTSListedWithOffers(activeNFTSListedWithOffers);
-        dashboardMetricsdto.setActiveNFTSListedWithOutOffers(auctionedNFTSCount - activeNFTSListedWithOffers);
+        List<Listing> activeNFTSListedWithOffers = listingRepository.getActiveNFTSListedWithOffers();
+        long activeNFTSListedWithOffersCount = activeNFTSListedWithOffers
+            .stream()
+            .filter(p -> p.getOffers().size() > 0)
+            .count();
+
+        dashboardMetricsdto.setActiveNFTSListedWithOffers(activeNFTSListedWithOffersCount);
+        dashboardMetricsdto.setActiveNFTSListedWithOutOffers(auctionedNFTSCount - activeNFTSListedWithOffersCount);
 
         return ResponseEntity.ok().body(dashboardMetricsdto);
     }
