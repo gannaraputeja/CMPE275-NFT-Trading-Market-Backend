@@ -115,6 +115,9 @@ public class WalletService {
                 listing.getAmount() > (currency.getAmount() - totalOffersAmount)) {
             throw new InsufficientCurrencyException("User has insufficient currency.");
         }
+        User currentOwner = nft.getOwner();
+        User futureOwner = user;
+
         NftTransaction nftTransaction = new NftTransaction();
         nftTransaction.setNft(nft);
         nftTransaction.setBuyer(user);
@@ -133,7 +136,7 @@ public class WalletService {
         nft.setOwner(user);
         nft.setLastRecordedTime(new Date());
         nftRepository.save(nft);
-        personalTransactionService.createBuyNFTTransaction(user, listing);
+        personalTransactionService.createBuyNFTTransaction(currentOwner, futureOwner, listing);
         return ResponseEntity.ok(new MessageResponse("Transaction successful."));
     }
 

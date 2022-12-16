@@ -92,12 +92,11 @@ public class PersonalTransactionService {
         NftTransaction nftT = nftTransactionRepository.save(nftTransaction);
     }
 
-    public void createBuyNFTTransaction(User buyer, Listing listing) {
+    public void createBuyNFTTransaction(User currentOwner, User futureOwner, Listing listing) {
         Nft currentNft = listing.getNft();
-        User seller = currentNft.getOwner();
         
         //PURCHASE LOG
-        Currency purchaseCurrency = currencyRepository.findByWalletIdAndType(buyer.getWallet().getId() , listing.getCurrencyType());
+        Currency purchaseCurrency = currencyRepository.findByWalletIdAndType(futureOwner.getWallet().getId() , listing.getCurrencyType());
         PersonalTransaction personalTransaction = new PersonalTransaction();
         personalTransaction.setCreatedOn(new Date());
         personalTransaction.setActionType(ActionType.PURCHASE);
@@ -105,12 +104,12 @@ public class PersonalTransactionService {
         personalTransaction.setCurrencyType(listing.getCurrencyType());
         personalTransaction.setAmount(listing.getAmount());
         personalTransaction.setAvailableAmount(purchaseCurrency.getAmount());
-        personalTransaction.setUser(buyer);
-        personalTransaction.setPreviousUser(seller);
+        personalTransaction.setUser(futureOwner);
+        personalTransaction.setPreviousUser(currentOwner);
         personalTransactionRepository.save(personalTransaction);
 
         //SELL LOG
-        Currency sellCurrency = currencyRepository.findByWalletIdAndType(seller.getWallet().getId() , listing.getCurrencyType());
+        Currency sellCurrency = currencyRepository.findByWalletIdAndType(currentOwner.getWallet().getId() , listing.getCurrencyType());
         PersonalTransaction personalTransaction1 = new PersonalTransaction();
         personalTransaction1.setCreatedOn(new Date());
         personalTransaction1.setActionType(ActionType.SELL);
@@ -118,8 +117,8 @@ public class PersonalTransactionService {
         personalTransaction1.setCurrencyType(listing.getCurrencyType());
         personalTransaction1.setAmount(listing.getAmount());
         personalTransaction1.setAvailableAmount(sellCurrency.getAmount());
-        personalTransaction1.setUser(seller);
-        personalTransaction1.setPreviousUser(buyer);
+        personalTransaction1.setUser(currentOwner);
+        personalTransaction1.setPreviousUser(futureOwner);
         personalTransactionRepository.save(personalTransaction1);
     }
 
